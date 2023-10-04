@@ -1,0 +1,4 @@
+# - Linhas
+
+# - Colunas
+Valor Venda Total:=if(sum([VLVENDA])=BLANK();0;sum([VLVENDA]))

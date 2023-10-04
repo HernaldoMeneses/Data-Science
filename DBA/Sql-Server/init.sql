@@ -1,0 +1,2 @@
+--Welcome to DataBase Administraror by ./HernaldoMeneses
+-- objetivo -> aprender T-SQL (Transact-SQL)
