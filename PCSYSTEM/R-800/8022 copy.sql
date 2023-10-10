@@ -1,6 +1,4 @@
-    select 
-    /*
-    'NOMEUSUARIOLOGADO'  USUARIO,
+    select 'NOMEUSUARIOLOGADO'  USUARIO,
        (SELECT fnc_dp_ret_dados_consulta((select listagg(pf.codigo, ',') WITHIN GROUP
           (ORDER BY pf.codigo) codigo from pcfilial pf where pf.codigo in (:COD_FILIAL)), 1) FROM DUAL) FILIAL,
        to_date(:DATA_INI,'dd-mm-rrrr') data_ini,
@@ -11,7 +9,6 @@
        tab.sup cod_sup,
        (select s.nome from pcsuperv s where s.codsupervisor=tab.sup) nome_sup,
        round(sum(tab.venda),2) venda,
-       
        round(sum(tab.venda_afat),2) venda_afat,
        round(sum(tab.dev),2) dev,
        round(sum(tab.venda) - sum(tab.dev),2) venda_liq,
@@ -20,7 +17,6 @@
          --   else round((sum(tab.venda)-sum(tab.dev))-sum(custofin),2) 
            --      end vlr_lucro,
         round((sum(tab.venda)-sum(tab.dev))-sum(custofin),2) vlr_lucro,   
-        */
        case when (sum(tab.venda))<= 0 then 0 
             else round((((sum(tab.venda)-sum(tab.dev))-sum(custofin))/(sum(tab.venda))*100),2)
                 end  per_lucro
