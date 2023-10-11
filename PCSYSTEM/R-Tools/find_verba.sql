@@ -1,0 +1,1 @@
+ select * from pcaplicverba where dtaplic >= to_date('06/09/2023','dd/mm/yyyy') 
