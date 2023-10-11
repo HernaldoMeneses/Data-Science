@@ -43,4 +43,45 @@
 --
 --
 --Benefits of sql
---pg23
+--#~$   There are many good reasons to use SQL
+--#~$   Perhaps the best reason to use SQL is that much of the world’s data is already in data‐bases.
+--
+--#~$   SQL Versus R or Python
+--#~$¬  SQL always runs on a database server
+--#~$¬  R and Python are usually run locally on your machine
+--#~§¬  There are, of course, lots of exceptions 
+--#~§¬   
+--#~§¬   A second difference is in how data is stored and organized
+--#~§¬   Relational databases
+--#~§¬   always organize data into rows and columns within tables
+--#~§¬   SQL assumes this struc‐ture for every query
+--#~§¬   R and Python have a wider variety of ways to store data
+--#~§¬   including variables, lists, and dictionaries, among other options.
+--#~§¬   Looping is another major difference between SQL and most other computer programming languages. 
+--#~§¬   SQL aggregations implicitly loop over the set of data without any additional code.
+--#~§¬   some vendors have created extensions to SQL, 
+--#~§¬    such as PL/SQL in Oracle and T-SQL in Microsoft SQL Server, that allow functionality such as looping.
+--#~§¬    
+--#~§¬    R or Python as Complemantary to Sql
+--#~§¬     packages
+--#~§¬     such as dbplyr for R and SQLAlchemy for Python allow programs written in those
+--#~§¬     languages to connect to databases, execute SQL queries, and use the results in further processing steps.
+--#~§¬    
+--#~§¬    
+--#~§¬    How Decide whats Lenguage to Project
+--#~§¬    Ask this questions
+--#~§¬    Where is the data located—in a database, a file, a website?
+--#~§¬    What is the volume of data?
+--#~§¬    Where is the data going—into a report, a visualization, a statistical analysis?
+--#~§¬    Will it need to be updated or refreshed with new data? How often?
+--#~§¬    What does your team or organization use, and how important is it to conform to existing standards?
+--#~§¬    
+--#~§¬    SQL as Part of the Data Analysis Workflow
+--#~§¬    Analysis work always starts with a question
+--#~§¬    Question to take a action
+--#~§¬    Once the question is framed we consider:
+--#~§¬          where the data originated           (Souce systems) 
+--#~§¬          where the data is stored            (Data warehouse)
+--#~§¬          the analysis plan                   (Queries and analysis) -- foco do livro
+--#~§¬          and how result will be presented    (Presentation - Visualization, report, dashboard, paper)
+
