@@ -1,51 +1,51 @@
---Analysis with SQL
---Whats Is Data Analysis
---     Power of computing whth Statistic's techniques 
---     Data discovery, interpretation and communication. 
---     All of this to finally decision making. 
---What is SQL (Structured Query Language)
---      It isn't general purpose, but very good to data base.
---      IBM - SQL - The first.
---      Edgar Codd in the 1990s The relational model.
---      IBM - Oracle - Microsoft e every other company.
---      
---      Sql
---      Sql - maniputalte
---      Sql - retrieve data
---      
---      database
---          schema_one
---              table_one
---                  field_one
---                  field_two
---                  index_one
---              table_two
---              view_one
---              function_one
---          schema_two
---          
---      Sql - Structured Query Language
---          DQL - DATA QUERY LENGUAGE
---              SELECT -- TABLES (OR VIWERS) combine data with joins...
---          DDL - DATA DEFINITION LENGUAGE
---              CREATE -- NEW OBJECT
---              ALTER -- changes the structure of an object
---              DROP -- delets the entire object and its structure.
---          DCL - DATA CONTROL LENGUAGE
---              GRANT -- allow query
---              REVOKE -- give or remove permission 
---          DML - DATA MANIPULATION LENGUAGE
---              INSERT
---              UPDATE
---              DELETE
---              INSERT
---
---
---
---Benefits of sql
+--#~$ Analysis with SQL
+--#~$ Whats Is Data Analysis
+--#~$     Power of computing whth Statistic's techniques 
+--#~$     Data discovery, interpretation and communication. 
+--#~$     All of this to finally decision making. 
+--#~$ What is SQL (Structured Query Language)
+--#~$      It isn't general purpose, but very good to data base.
+--#~$      IBM - SQL - The first.
+--#~$      Edgar Codd in the 1990s The relational model.
+--#~$      IBM - Oracle - Microsoft e every other company.
+--#~$      
+--#~$      Sql
+--#~$      Sql - maniputalte
+--#~$      Sql - retrieve data
+--#~$      
+--#~$      database
+--#~$          schema_one
+--#~$              table_one
+--#~$                  field_one
+--#~$                field_two
+--#~$                  index_one
+--#~$              table_two
+--#~$              view_one
+--#~$              function_one
+--#~$          schema_two
+--#~$          
+--#~$      Sql - Structured Query Language
+--#~$          DQL - DATA QUERY LENGUAGE
+--#~$              SELECT -- TABLES (OR VIWERS) combine data with joins...
+--#~$          DDL - DATA DEFINITION LENGUAGE
+--#~$              CREATE -- NEW OBJECT
+--#~$             ALTER -- changes the structure of an object
+--#~$              DROP -- delets the entire object and its structure.
+--#~$          DCL - DATA CONTROL LENGUAGE
+--#~$              GRANT -- allow query
+--#~$              REVOKE -- give or remove permission 
+--#~$          DML - DATA MANIPULATION LENGUAGE
+--#~$              INSERT
+--#~$              UPDATE
+--#~$              DELETE
+--#~$              INSERT
+--#~$
+--#~$
+--#~$
+--#~$ Benefits of sql
 --#~$   There are many good reasons to use SQL
 --#~$   Perhaps the best reason to use SQL is that much of the world’s data is already in data‐bases.
---
+--#~$
 --#~$   SQL Versus R or Python
 --#~$¬  SQL always runs on a database server
 --#~$¬  R and Python are usually run locally on your machine
