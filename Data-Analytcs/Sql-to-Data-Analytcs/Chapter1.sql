@@ -115,6 +115,6 @@
 --#~§¬    
 --#~§¬    
 --#~§¬ Database Types and How to Work with Them
---#~§¬    
---#~§¬ pg28
+--#~§¬ ¬ Row-Store Databases - transactional databases   
+--#~§¬ 
 --#~§¬

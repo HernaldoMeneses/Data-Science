@@ -11,6 +11,9 @@
 --# - Infrastrutura de compilação e informações ao final do Script.
 --#--------------------------------------------------------------------Thanks.
 select
+to_date(:DTINICIO,'dd-mm-rrrr'),
+to_date(:DTFIM,'dd-mm-rrrr'),
+TAB1.codsupervisor, TAB1.nomesup,
        TAB1.codusur, TAB1.nome, TAB1.vlmetatotal, TAB1.vlvenda,
        CASE when tab1.vlmetatotal>0 then round(((tab1.vlvenda/tab1.vlmetatotal)*100),2) 
             else 0 end perc_meta_fin,
@@ -27,6 +30,8 @@ select
        from ( 
      
 SELECT 
+      pcusuari.codsupervisor,
+      pcsuperv.nome AS nomesup,
        pcusuari.codusur, 
        pcusuari.nome, 
         nvl(pcusuari.comissaofixa,0) FIXO, 
