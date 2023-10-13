@@ -128,8 +128,8 @@ FROM --Obj1
           AND NVL(VLVENDA, 0) <> 0 
           ORDER BY PCUSUARI.CODSUPERVISOR,VLVENDA DESC
      ) tab1, --Obj1.1__
-
-     (SELECT 'NOMEUSUARIOLOGADO'  USUARIO,
+     (SELECT --Obj1.2_init
+          'NOMEUSUARIOLOGADO'  USUARIO,
           (SELECT fnc_dp_ret_dados_consulta((select listagg(pf.codigo, ',') WITHIN GROUP
           (ORDER BY pf.codigo) codigo from pcfilial pf where pf.codigo in (:COD_FILIAL)), 1) FROM DUAL) FILIAL,
           to_date(:DTINICIO,'dd-mm-rrrr') data_ini,
@@ -148,149 +148,152 @@ FROM --Obj1
           case when (sum(tab.venda))<= 0 then 0 
             else round((((sum(tab.venda)-sum(tab.dev))-sum(custofin))/(sum(tab.venda))*100),2)
                 end  per_lucro
-          from ( 
-       select p.CODUSUR rca, 
-       p.CODSUPERVISOR sup, 
-       sum(p.PVENDA) venda, 
-       
-       0 dev ,
-       SUM(P.VLCUSTOFIN) custofin ,
-       --(sum(p.vlcustofin)-(sum((select sum(pi.qt*nvl(pi.vlverbacmv,0))+sum(pi.qt*nvl(pi.vlrebaixacmv,0))+sum(pi.qt*nvl(pi.vlverbacmvcli,0)) from pcpedi pi where pi.numped=p.numped)))) custofin , 
-       0 venda_afat
-       from vw_vendaspedido_8022 p
-         
-                     where  TO_DATE(p.DATA, 'DD-MM-RRRR') between to_date(:DTINICIO,'dd-mm-rrrr') and to_date(:DTFIM,'dd-mm-rrrr')
-                      --and p.DTCANCEL is null
-                      and p.CODFILIAL=:COD_FILIAL
-                      and p.CODUSUR in (:COD_RCA)
-                      and p.CODSUPERVISOR in (:Cod_Super)  
-                      --AND P.CONDVENDA IN (1)                        
-                  group by p.CODUSUR, p.CODSUPERVISOR    
+          from (select p.CODUSUR rca, 
+                    p.CODSUPERVISOR sup, 
+                    sum(p.PVENDA) venda, 
+                    0 dev ,
+                    SUM(P.VLCUSTOFIN) custofin ,
+                    --(sum(p.vlcustofin)-(sum((select sum(pi.qt*nvl(pi.vlverbacmv,0))+sum(pi.qt*nvl(pi.vlrebaixacmv,0))+sum(pi.qt*nvl(pi.vlverbacmvcli,0)) from pcpedi pi where pi.numped=p.numped)))) custofin , 
+                    0 venda_afat
+                    from vw_vendaspedido_8022 p
+               
+                              where  TO_DATE(p.DATA, 'DD-MM-RRRR') between to_date(:DTINICIO,'dd-mm-rrrr') and to_date(:DTFIM,'dd-mm-rrrr')
+                              --and p.DTCANCEL is null
+                              and p.CODFILIAL=:COD_FILIAL
+                              and p.CODUSUR in (:COD_RCA)
+                              and p.CODSUPERVISOR in (:Cod_Super)  
+                              --AND P.CONDVENDA IN (1)                        
+                         group by p.CODUSUR, p.CODSUPERVISOR    
 
-              ) tab
-          group by tab.rca, tab.sup    
-     order by sup,per_lucro desc    
-   ) tab2,
-   (SELECT 
+                    ) tab
+                    group by tab.rca, tab.sup    
+                    order by sup,per_lucro desc    
+   ) tab2, --Obj1.2__
+   (SELECT --Obj1.3_init
           pcusuari.codusur, 
           pcusuari.codsupervisor,
-          ((SELECT COUNT(DISTINCT(PCCLIENT.CODCLI)) 
+          ((SELECT --Obj1.3.1_init
+               COUNT(DISTINCT(PCCLIENT.CODCLI)) 
                FROM pcclient 
                WHERE pcclient.codusur1 = pcusuari.codusur)
-          + (SELECT COUNT(DISTINCT(PCCLIENT.CODCLI)) 
+               + (SELECT COUNT(DISTINCT(PCCLIENT.CODCLI)) 
                FROM pcclient
                WHERE pcclient.codusur2 = pcusuari.codusur
                AND NVL(PCCLIENT.codusur1,0) <> NVL(PCCLIENT.codusur2,0))
-          + (SELECT COUNT(DISTINCT(PCCLIENT.CODCLI))
+               + (SELECT COUNT(DISTINCT(PCCLIENT.CODCLI))
                FROM pcusurcli, pcclient
                WHERE pcusurcli.codusur = pcusuari.codusur
                AND pcusurcli.codcli = pcclient.codcli
                AND PCUSURCLI.CODUSUR <> NVL(PCCLIENT.CODUSUR1, 0)
                AND PCUSURCLI.CODUSUR <> NVL(PCCLIENT.CODUSUR2, 0))
           ) clqtclicad,
-   
-          ( SELECT COUNT(DISTINCT(PCCLIENT.CODCLI)) QTCLIATIVOS FROM PCCLIENT
-          WHERE ( (PCCLIENT.CODUSUR1 = PCUSUARI.CODUSUR)  OR ( (PCCLIENT.CODUSUR2 = PCUSUARI.CODUSUR ) AND ( NVL(PCCLIENT.codusur1,0) <> 
-          NVL(PCCLIENT.codusur2,0)) )  OR
-          EXISTS (SELECT PCUSURCLI.CODUSUR
+          ( SELECT 
+               COUNT(DISTINCT(PCCLIENT.CODCLI)) QTCLIATIVOS FROM PCCLIENT
+               WHERE ( (PCCLIENT.CODUSUR1 = PCUSUARI.CODUSUR)  OR ( (PCCLIENT.CODUSUR2 = PCUSUARI.CODUSUR ) AND ( NVL(PCCLIENT.codusur1,0) <> 
+               NVL(PCCLIENT.codusur2,0)) )  OR
+               EXISTS (SELECT PCUSURCLI.CODUSUR
                    FROM PCUSURCLI
                   WHERE PCUSURCLI.CODUSUR = PCUSUARI.CODUSUR
                   AND NVL(PCUSURCLI.CODUSUR,0) <> NVL(PCCLIENT.codusur1,0)
                    AND NVL(PCUSURCLI.CODUSUR,0) <> NVL(PCCLIENT.codusur2,0)
                     AND PCUSURCLI.CODCLI  = PCCLIENT.CODCLI))
-          AND ( PCCLIENT.DTULTCOMP >= trunc(sysdate - (SELECT nvl(numdiascliinativ,0) FROM pcconsum) ) )
-          ) clqtcliativ 
+               AND ( PCCLIENT.DTULTCOMP >= trunc(sysdate - (SELECT nvl(numdiascliinativ,0) FROM pcconsum) ) )
+          ) clqtcliativ,
+          vendas.qtcli 
  
-     FROM 
-          pcusuari, 
-          pcsuperv, 
-          (SELECT  PCPEDC.CODUSUR  codusur, 
-          SUM(ROUND(DECODE(PCPEDC.CONDVENDA,5,0,6,0,11,0,12,0,(NVL(PCPEDI.PVENDA, 0) + NVL(PCPEDI.VLOUTRASDESP, 0) + 
-          NVL(PCPEDI.VLFRETE, 0)) * NVL(PCPEDI.QT, 0)),2)) AS vlvenda,
-                 COUNT(DISTINCT(PCPEDC.NUMPED)) QTNF,
-                 COUNT(PCPEDI.CODPROD) NUMITENS,
-                 SUM(NVL(PCPEDI.PTABELA, 0) * NVL(PCPEDI.QT, 0)) AS vltabela,
-                 SUM(NVL(PCPEDC.PRAZOMEDIO, 0) *  (NVL(PCPEDI.QT, 0) * (NVL(PCPEDI.PVENDA, 0) + NVL(PCPEDI.VLOUTRASDESP, 0) + 
-          NVL(PCPEDI.VLFRETE, 0))) ) AS prazomedio,
-          SUM(ROUND(DECODE(PCPEDC.CONDVENDA,5,0,6,0,11,0,12,0,(NVL(PCPEDI.PVENDA, 0) + NVL(PCPEDI.VLOUTRASDESP, 0) + 
-          NVL(PCPEDI.VLFRETE, 0)) * NVL(PCPEDI.QT, 0)),2)) AS VLVENDA1,
-                 COUNT (DISTINCT (pcpedc.codcli)) qtcli
-          FROM PCPEDI,
-               PCPEDC,
-               PCPRODUT,
-               PCFORNEC,
-               PCDEPTO,
-               PCCLIENT,
-               PCUSUARI,
-               PCSUPERV,
-               PCATIVI,
-               PCPRACA, PCCIDADE
-          WHERE 1=1  
-          AND pcpedc.DATA BETWEEN :DTINICIO AND :DTFIM 
-          AND pcpedI.DATA BETWEEN :DTINICIO AND :DTFIM 
-          AND pcpedc.codfilial IN ('2')
-          AND PCPEDI.NUMPED = PCPEDC.NUMPED
-          AND PCCLIENT.CODCIDADE = PCCIDADE.CODCIDADE(+)
-          AND PCPEDC.CODCLI = PCCLIENT.CODCLI
-          AND NVL(PCPEDI.BONIFIC, 'N') =  'N' 
-          AND PCCLIENT.CODATV1 = PCATIVI.CODATIV(+)
-          AND PCPEDC.DTCANCEL IS NULL
-          AND PCPEDI.CODPROD = PCPRODUT.CODPROD
-          AND PCPRODUT.CODEPTO = PCDEPTO.CODEPTO
-          AND PCPRODUT.CODFORNEC = PCFORNEC.CODFORNEC
-          AND  PCPEDC.CODUSUR  = PCUSUARI.CODUSUR
-          AND  PCPEDC.CODSUPERVISOR  = PCSUPERV.CODSUPERVISOR
-          AND PCPEDC.CODPRACA = PCPRACA.CODPRACA
-          AND PCPEDC.CONDVENDA IN (1, 2, 3, 7, 9, 14, 15, 17, 18, 19, 98)
-          AND pcpedc.dtcancel IS NULL
-          AND pcpedc.vlatend > 0 
-          AND  PCPEDC.CODSUPERVISOR  = :Cod_Super
-          AND pcusuari.codsupervisor = :Cod_Super
-          GROUP BY  PCPEDC.CODUSUR  ) vendas,
-          (SELECT   pcprest.codusur, (SUM(PCPREST.VALOR) ) valor,
-                 COUNT (*) qtpend 
-            FROM pcprest, pcusuari
-           WHERE pcprest.dtpag IS NULL
-             AND pcprest.codusur = pcusuari.codusur
-           AND pcprest.codfilial IN ('2')
-           AND pcusuari.codsupervisor = :Cod_Super
-          GROUP BY pcprest.codusur) financ,
-          (SELECT pcprest.codusur, SUM(VALOR) vpago
-          FROM PCPREST, PCCLIENT, PCUSUARI, PCSUPERV, PCCOB
-               WHERE PCPREST.CODCLI = PCCLIENT.CODCLI
-               and PCPREST.CODUSUR = PCUSUARI.CODUSUR
-               and PCUSUARI.CODSUPERVISOR = PCSUPERV.CODSUPERVISOR
-               and PCPREST.CODCOB = PCCOB.CODCOB
-               and PCPREST.CODCOB not in ('DEVP', 'DEVT', 'BNF', 'BNFT', 'BNFR', 'BNTR', 'BNRP', 'CRED')
-               and PCUSUARI.CODSUPERVISOR = :Cod_Super
-               and PCPREST.DTPAG is NULL
-               and (PCPREST.DTVENC + NVL(PCCOB.DIASCARENCIA,0)) <= (TRUNC(SYSDATE) - 1)
-               and (Pcprest.CODFILIAL IN ('2'))
-               GROUP BY pcprest.codusur) inandimp,
-          (SELECT  PCPEDC.CODUSUR  CODUSUR,COUNT(DISTINCT(PCPEDI.CODPROD)) AS QTMIX
-               FROM PCPEDI, PCUSUARI, PCSUPERV, PCPEDC
-               WHERE PCPEDI.NUMPED = PCPEDC.NUMPED
-               AND NVL(PCPEDI.BONIFIC, 'N') =  'N' 
-               AND  PCPEDC.CODUSUR  = PCUSUARI.CODUSUR
-               AND PCPEDC.DATA BETWEEN :DTINICIO AND :DTFIM 
-               AND PCPEDC.CONDVENDA IN (1, 2, 3, 7, 9, 14, 15, 17, 18, 19, 98)
-               AND PCPEDC.DTCANCEL IS NULL
-               AND pcpedc.vlatend > 0 
-               AND PCUSUARI.CODSUPERVISOR = PCSUPERV.CODSUPERVISOR
-               AND PCPEDC.CODFILIAL IN ('2')
-               AND  PCPEDC.CODSUPERVISOR = :Cod_Super
-               GROUP BY  PCPEDC.CODUSUR  ) MIX
-     WHERE pcusuari.codsupervisor = pcsuperv.codsupervisor
-     AND pcusuari.codusur = vendas.codusur(+)
-     AND pcusuari.codusur = financ.codusur(+)
-     AND pcusuari.codusur = inandimp.codusur(+)
-     AND pcusuari.codusur = mix.codusur(+)
-     AND PCUSUARI.CODSUPERVISOR = :Cod_Super
-     AND NVL(VLVENDA, 0) <> 0 
-     ORDER BY PCUSUARI.CODSUPERVISOR,VLVENDA DESC
-     ) tab3  
+          FROM 
+               pcusuari, 
+               pcsuperv, 
+               (SELECT  
+                    PCPEDC.CODUSUR  codusur, 
+                    SUM(ROUND(DECODE(PCPEDC.CONDVENDA,5,0,6,0,11,0,12,0,(NVL(PCPEDI.PVENDA, 0) + NVL(PCPEDI.VLOUTRASDESP, 0) + 
+                    NVL(PCPEDI.VLFRETE, 0)) * NVL(PCPEDI.QT, 0)),2)) AS vlvenda,
+                    COUNT(DISTINCT(PCPEDC.NUMPED)) QTNF,
+                    COUNT(PCPEDI.CODPROD) NUMITENS,
+                    SUM(NVL(PCPEDI.PTABELA, 0) * NVL(PCPEDI.QT, 0)) AS vltabela,
+                    SUM(NVL(PCPEDC.PRAZOMEDIO, 0) *  (NVL(PCPEDI.QT, 0) * (NVL(PCPEDI.PVENDA, 0) + NVL(PCPEDI.VLOUTRASDESP, 0) + 
+                    NVL(PCPEDI.VLFRETE, 0))) ) AS prazomedio,
+                    SUM(ROUND(DECODE(PCPEDC.CONDVENDA,5,0,6,0,11,0,12,0,(NVL(PCPEDI.PVENDA, 0) + NVL(PCPEDI.VLOUTRASDESP, 0) + 
+                    NVL(PCPEDI.VLFRETE, 0)) * NVL(PCPEDI.QT, 0)),2)) AS VLVENDA1,
+                    COUNT (DISTINCT (pcpedc.codcli)) qtcli
+                    FROM PCPEDI,
+                    PCPEDC,
+                    PCPRODUT,
+                    PCFORNEC,
+                    PCDEPTO,
+                    PCCLIENT,
+                    PCUSUARI,
+                    PCSUPERV,
+                    PCATIVI,
+                    PCPRACA, PCCIDADE
+                    WHERE 1=1  
+                    AND pcpedc.DATA BETWEEN :DTINICIO AND :DTFIM 
+                    AND pcpedI.DATA BETWEEN :DTINICIO AND :DTFIM 
+                    AND pcpedc.codfilial IN ('2')
+                    AND PCPEDI.NUMPED = PCPEDC.NUMPED
+                    AND PCCLIENT.CODCIDADE = PCCIDADE.CODCIDADE(+)
+                    AND PCPEDC.CODCLI = PCCLIENT.CODCLI
+                    AND NVL(PCPEDI.BONIFIC, 'N') =  'N' 
+                    AND PCCLIENT.CODATV1 = PCATIVI.CODATIV(+)
+                    AND PCPEDC.DTCANCEL IS NULL
+                    AND PCPEDI.CODPROD = PCPRODUT.CODPROD
+                    AND PCPRODUT.CODEPTO = PCDEPTO.CODEPTO
+                    AND PCPRODUT.CODFORNEC = PCFORNEC.CODFORNEC
+                    AND  PCPEDC.CODUSUR  = PCUSUARI.CODUSUR
+                    AND  PCPEDC.CODSUPERVISOR  = PCSUPERV.CODSUPERVISOR
+                    AND PCPEDC.CODPRACA = PCPRACA.CODPRACA
+                    AND PCPEDC.CONDVENDA IN (1, 2, 3, 7, 9, 14, 15, 17, 18, 19, 98)
+                    AND pcpedc.dtcancel IS NULL
+                    AND pcpedc.vlatend > 0 
+                    AND  PCPEDC.CODSUPERVISOR  = :Cod_Super
+                    AND pcusuari.codsupervisor = :Cod_Super
+                    GROUP BY  PCPEDC.CODUSUR  ) vendas,
+               (SELECT   
+                    pcprest.codusur, (SUM(PCPREST.VALOR) ) valor,
+                    COUNT (*) qtpend 
+                    FROM pcprest, pcusuari
+                    WHERE pcprest.dtpag IS NULL
+                    AND pcprest.codusur = pcusuari.codusur
+                    AND pcprest.codfilial IN ('2')
+                    AND pcusuari.codsupervisor = :Cod_Super
+                    GROUP BY pcprest.codusur) financ,
+               (SELECT 
+                    pcprest.codusur, SUM(VALOR) vpago
+                    FROM PCPREST, PCCLIENT, PCUSUARI, PCSUPERV, PCCOB
+                    WHERE PCPREST.CODCLI = PCCLIENT.CODCLI
+                    and PCPREST.CODUSUR = PCUSUARI.CODUSUR
+                    and PCUSUARI.CODSUPERVISOR = PCSUPERV.CODSUPERVISOR
+                    and PCPREST.CODCOB = PCCOB.CODCOB
+                    and PCPREST.CODCOB not in ('DEVP', 'DEVT', 'BNF', 'BNFT', 'BNFR', 'BNTR', 'BNRP', 'CRED')
+                    and PCUSUARI.CODSUPERVISOR = :Cod_Super
+                    and PCPREST.DTPAG is NULL
+                    and (PCPREST.DTVENC + NVL(PCCOB.DIASCARENCIA,0)) <= (TRUNC(SYSDATE) - 1)
+                    and (Pcprest.CODFILIAL IN ('2'))
+                    GROUP BY pcprest.codusur) inandimp,
+               (SELECT  PCPEDC.CODUSUR  CODUSUR,COUNT(DISTINCT(PCPEDI.CODPROD)) AS QTMIX
+                    FROM PCPEDI, PCUSUARI, PCSUPERV, PCPEDC
+                    WHERE PCPEDI.NUMPED = PCPEDC.NUMPED
+                    AND NVL(PCPEDI.BONIFIC, 'N') =  'N' 
+                    AND  PCPEDC.CODUSUR  = PCUSUARI.CODUSUR
+                    AND PCPEDC.DATA BETWEEN :DTINICIO AND :DTFIM 
+                    AND PCPEDC.CONDVENDA IN (1, 2, 3, 7, 9, 14, 15, 17, 18, 19, 98)
+                    AND PCPEDC.DTCANCEL IS NULL
+                    AND pcpedc.vlatend > 0 
+                    AND PCUSUARI.CODSUPERVISOR = PCSUPERV.CODSUPERVISOR
+                    AND PCPEDC.CODFILIAL IN ('2')
+                    AND  PCPEDC.CODSUPERVISOR = :Cod_Super
+                    GROUP BY  PCPEDC.CODUSUR  ) MIX
+                    WHERE pcusuari.codsupervisor = pcsuperv.codsupervisor
+                    AND pcusuari.codusur = vendas.codusur(+)
+                    AND pcusuari.codusur = financ.codusur(+)
+                    AND pcusuari.codusur = inandimp.codusur(+)
+                    AND pcusuari.codusur = mix.codusur(+)
+                    AND PCUSUARI.CODSUPERVISOR = :Cod_Super
+                    AND NVL(VLVENDA, 0) <> 0 
+                    ORDER BY PCUSUARI.CODSUPERVISOR,VLVENDA DESC
+     ) tab3 --Obj1.3__ 
 WHERE TAB1.codusur = tab2.cod_rca
-ANDE tab2.cod_rca = tab3.codusur
+AND tab2.cod_rca = tab3.codusur
 
 
 --   ########### - Compile_By.

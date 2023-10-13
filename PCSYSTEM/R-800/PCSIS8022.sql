@@ -49,4 +49,4 @@
        
               ) tab
           group by tab.rca, tab.sup    
-     order by sup,per_lucro desc     
+     order by sup,per_lucro desc    
