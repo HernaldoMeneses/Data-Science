@@ -2,13 +2,22 @@ USE [powerbi]
 GO
 
 SELECT
+	CODFORNEC,
+    CODRCA,
+    COUNT(CODCLI) AS TotalClientes,
+    SUM(VENDA) AS TotalVendas,
+    SUM(CASE WHEN VENDA >= 50 THEN 1 ELSE 0 END) AS TotalVendasMaiorIgualA50,
+	COUNT(TotCliCadAtivo) As TOtCliCadAtivo
+FROM (
+SELECT
+	FV.[CODFORNEC] as CODFORNEC,
     FV.[CODUSUR] AS CODRCA,
-	SUM(FV.[QT]) AS QT,
+	FV.[CODCLI] AS CODCLI,
+	COUNT(DISTINCT FV.[CODPROD]) AS TotalProdutos,
 	SUM(FV.[QTCLIENTE]) AS QTClI,
-	SUM(FV.[QTPED]) AS QTPED,
-	SUM(FV.[VLVENDA]) AS VENDA,
-    COUNT(*) AS TotalRegistros,
-    SubConsulta.[TotalRegistros] AS TotCliCadAtivo
+	SubConsulta.[TotalRegistros] AS TotCliCadAtivo,
+	SUM(FV.[QTCLIENTE])/SubConsulta.[TotalRegistros]*100 AS PercBase,
+	SUM(FV.[VLVENDA]) AS VENDA   
 FROM [dbo].[fato_Venda324I] AS FV
 LEFT JOIN (
     SELECT
@@ -22,6 +31,13 @@ LEFT JOIN (
 WHERE MONTH(FV.[DATA]) = MONTH(GETDATE()) 
     AND YEAR(FV.[DATA]) = YEAR(GETDATE())
     AND FV.[CODFORNEC] = 3309
-GROUP BY FV.[CODUSUR], SubConsulta.[TotalRegistros]
-ORDER BY TotalRegistros
+GROUP BY
+	FV.[CODFORNEC]
+	, FV.[CODUSUR]
+	, FV.[CODCLI] 
+	, SubConsulta.[TotalRegistros]
+	) AS SubSelect
+GROUP BY 
+	CODFORNEC
+	, CODRCA
 GO

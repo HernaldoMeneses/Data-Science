@@ -27,12 +27,15 @@ SELECT --Obj1_init
      fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.CODUSUR, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 8) PERC_LUCRO,
      fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.CODUSUR, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 6) PERC_COB_LUCRO,
      tab2.per_lucro,
+     tab2.venda,
+     tab2.dev,
+     tab2.cmv,
      fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.CODUSUR, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 3) PERC_INAD,
      tab3.clqtcliativ,
      tab3.qtcli as Positivacao,
      tab3.qtcli/tab3.clqtcliativ*100 as Perc_Positva,
---     tab4.VLTOTAL as Devol,
---     tab4.VLTOTAL/TAB1.vlvenda*100 as Perc_Devol                  
+     tab4.VLTOTAL as Devol,
+     tab4.VLTOTAL/TAB1.vlvenda*100 as Perc_Devol                 
 FROM --Obj1       
      (SELECT --Obj1.1_init
           pcusuari.codsupervisor,
@@ -290,8 +293,91 @@ FROM --Obj1
                     AND PCUSUARI.CODSUPERVISOR = :Cod_Super
                     AND NVL(VLVENDA, 0) <> 0 
                     ORDER BY PCUSUARI.CODSUPERVISOR,VLVENDA DESC
-     ) tab3 --Obj1.3__
-     
+     ) tab3
+      --Obj1.3__
+    LEFT JOIN (SELECT --Obj1.4_init
+  PCUSUARI.CODSUPERVISOR,
+  PCUSUARI.CODusur,
+  DECODE(PCNFENT.VLTOTAL,0,PCESTCOM.VLDEVOLUCAO,PCNFENT.VLTOTAL) AS VLTOTAL
+  FROM PCNFENT, PCESTCOM, PCTABDEV, PCCLIENT, PCEMPR, PCUSUARI, PCSUPERV, PCEMPR FUNC, PCNFSAID, PCDEVCONSUM
+ WHERE  ( PCNFENT.CODDEVOL = PCTABDEV.CODDEVOL(+) )
+   AND PCNFENT.NUMTRANSENT = PCESTCOM.NUMTRANSENT (+)
+   AND   ( PCNFENT.CODFORNEC  = PCCLIENT.CODCLI )
+   AND ( PCNFENT.NUMTRANSENT = PCDEVCONSUM.NUMTRANSENT(+) )
+   AND NVL(PCNFENT.CODFILIALNF, PCNFENT.CODFILIAL) = :COD_FILIAL
+   AND   ( PCNFENT.CODFUNCLANC       = FUNC.MATRICULA(+))
+   AND   ( PCNFENT.CODMOTORISTADEVOL = PCEMPR.MATRICULA(+))
+   AND   (  PCNFENT.CODUSURDEVOL  = PCUSUARI.CODUSUR )
+   AND   ( PCUSUARI.CODSUPERVISOR    = PCSUPERV.CODSUPERVISOR(+))
+   AND   ( PCNFENT.DTENT BETWEEN  :DTINICIO AND :DTFIM  )
+   AND   ( PCNFENT.TIPODESCARGA IN ('6','7','T') ) 
+   AND   ( NVL(PCNFENT.OBS, 'X') <> 'NF CANCELADA')
+   AND   ( PCNFENT.CODFISCAL IN ('131','132','231','232','199','299') )
+   AND EXISTS (SELECT PCPRODUT.CODPROD 
+                 FROM PCPRODUT, PCMOV
+                WHERE PCMOV.CODPROD = PCPRODUT.CODPROD
+                  AND PCMOV.NUMTRANSENT = PCNFENT.NUMTRANSENT
+                  AND PCMOV.NUMNOTA = PCNFENT.NUMNOTA
+                  AND PCMOV.DTCANCEL IS NULL
+                  AND ( EXISTS ( SELECT CODEPTO 
+                                   FROM PCDEPTO 
+                                  WHERE PCPRODUT.CODEPTO = PCDEPTO.CODEPTO 
+                                    AND PCDEPTO.CODEPTO NOT IN (9999, 999999) 
+                                    AND ((SELECT COUNT(1) 
+                                            FROM PCLIB 
+                                           WHERE CODTABELA = 2 
+                                             --AND PCLIB.CODFUNC = :CODFUNCX 
+                                             AND ((PCLIB.CODIGON = 9999) OR (PCLIB.CODIGON = 999999))) > 0 
+                                              OR (SELECT COUNT(1) 
+                                                    FROM PCLIB 
+                                                   WHERE CODTABELA = 2 
+                                                     --AND PCLIB.CODFUNC = :CODFUNCX 
+                                                     AND PCLIB.CODIGON = PCDEPTO.CODEPTO 
+                                                     AND PCLIB.CODIGON IS NOT NULL) > 0))) 
+                                                     AND (EXISTS (SELECT CODFORNEC 
+                                                                    FROM PCFORNEC 
+                                                                   WHERE PCPRODUT.CODFORNEC = PCFORNEC.CODFORNEC 
+                                                                     AND PCFORNEC.CODFORNEC NOT IN (9999, 999999) 
+                                                                     AND ((SELECT COUNT(1) 
+                                                                            FROM PCLIB 
+                                                                           WHERE CODTABELA = 3 
+                                                                             --AND PCLIB.CODFUNC = :CODFUNCX 
+                                                                             AND ((PCLIB.CODIGON = 9999) OR (PCLIB.CODIGON = 999999))) > 0 
+                                                                              OR (SELECT COUNT(1) 
+                                                                                    FROM PCLIB 
+                                                                                   WHERE CODTABELA = 3 
+                                                                                     --AND PCLIB.CODFUNC = :CODFUNCX 
+                                                                                     AND PCLIB.CODIGON = PCFORNEC.CODFORNEC 
+                                                                                     AND PCLIB.CODIGON IS NOT NULL) > 0))) 
+                                                                                     AND PCMOV.CODFILIAL = PCNFENT.CODFILIAL)
+                                                                                     AND (EXISTS (SELECT CODSUPERVISOR 
+                                                                                                    FROM PCUSUARI 
+                                                                                                   WHERE PCUSUARI.CODSUPERVISOR = PCUSUARI.CODSUPERVISOR 
+                                                                                                     AND PCUSUARI.CODSUPERVISOR NOT IN (9999, 999999) 
+                                                                                                     AND ((SELECT COUNT(1) 
+                                                                                                            FROM PCLIB 
+                                                                                                           WHERE CODTABELA = 7 
+                                                                                                             --AND PCLIB.CODFUNC = :CODFUNCX 
+                                                                                                             AND ((PCLIB.CODIGON = 9999) OR (PCLIB.CODIGON = 999999))) > 0 
+                                                                                                              OR (SELECT COUNT(1) 
+                                                                                                                    FROM PCLIB 
+                                                                                                                   WHERE CODTABELA = 7 
+                                                                                                                     --AND PCLIB.CODFUNC = :CODFUNCX 
+                                                                                                                     AND PCLIB.CODIGON = PCUSUARI.CODSUPERVISOR 
+                                                                                                                     AND PCLIB.CODIGON IS NOT NULL) > 0))) 
+                                                                                                                     AND PCESTCOM.NUMTRANSVENDA = PCNFSAID.NUMTRANSVENDA(+) 
+                                                                                                                     AND NVl(PCNFSAID.CONDVENDA,0) NOT IN (4, 8, 10, 13, 20, 98, 99)
+                                                                                                                     AND PCESTCOM.NUMTRANSVENDA = PCNFSAID.NUMTRANSVENDA(+) 
+GROUP BY     
+  PCUSUARI.CODSUPERVISOR,
+  PCUSUARI.CODusur,
+  PCNFENT.VLTOTAL,
+  PCESTCOM.VLDEVOLUCAO                     
+ORDER BY    
+  PCUSUARI.CODSUPERVISOR,
+  PCUSUARI.CODusur
+     ) tab4  --Obj1.3__
+     on TAB1.codusur = tab4.codusur
 WHERE TAB1.codusur = tab2.cod_rca
 AND tab2.cod_rca = tab3.codusur
 --AND tab2.cod_rca = tab4.codusur
