@@ -1,0 +1,31 @@
+USE [powerbi]
+GO
+
+SELECT
+    FV.[CODSUPERVISOR]
+    ,FV.[CODGERENTE]
+--    ,FV.[POSICAO]
+    ,FV.[DATA]
+    ,FV.[CODUSUR]
+--    ,FV.[CODFILIAL]
+--    ,FV.[CODEPTO]
+    ,FV.[CODFORNEC]
+    ,FV.[CODPROD]
+    ,FV.[CODCLI]
+    ,FV.[VLVENDA]
+--    ,FV.[VLCUSTOFIN]
+    ,FV.[QT]
+--    ,FV.[QTBNF]
+    ,FV.[QTCLIENTE]
+    ,FV.[PESO]
+    ,FV.[QTPED]
+    ,FV.[VLBONIFIC]
+FROM [dbo].[fato_Venda324I] AS FV
+WHERE MONTH(FV.[DATA]) = MONTH(GETDATE()) 
+    AND YEAR(FV.[DATA]) = YEAR(GETDATE())
+    AND FV.[CODFORNEC] = 3309
+ORDER BY FV.[DATA]
+GO
+
+
+
