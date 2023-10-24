@@ -29,7 +29,8 @@ SELECT --Obj1_init
      tab2.per_lucro,
      fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.CODUSUR, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 3) PERC_INAD,
      tab3.clqtcliativ,
-     tab3.qtcli as Positivacao,
+     tab3.qtcli as Positivacao,-*
+      
      tab3.qtcli/tab3.clqtcliativ*100 as Perc_Positva,
      tab4.VLTOTAL as Devol,
      tab4.VLTOTAL/TAB1.vlvenda*100 as Perc_Devol                  
