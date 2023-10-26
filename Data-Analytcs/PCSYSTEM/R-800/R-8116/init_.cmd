@@ -4,11 +4,7 @@ mode con: cols=100 lines=100
 color 01
 title Documantation R-8116
 echo .
-echo -
-echo --
-echo ---                                Fluxo de Desenvolvimento
-echo --
-echo -
+echo -                                  Fluxo de Desenvolvimento
 echo .
 echo . #-----------------------------------------------------------------------------------------#
 echo . #                                                                                        -#
@@ -39,9 +35,5 @@ echo . #------------------------------------------------------------------------
 echo .      Rontina Resultante = 8116 - Acompanhamento Geral por vendedor
 echo . #-----------------------------------------------------------------------------------------#
 echo .
-echo -
-echo --
-echo ---                                version 1.0 by H.Meneses
-echo --
-echo -
+echo -                                  version 1.0 by H.Meneses
 echo .
