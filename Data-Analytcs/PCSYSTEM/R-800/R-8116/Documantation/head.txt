@@ -1,0 +1,14 @@
+.
+ -                                  Fluxo de Desenvolvimento
+ .
+ . #-----------------------------------------------------------------------------------------#
+ . #                                                                                        -#
+ . # - Objetivo: Docmantation R-8116                                                        -#
+ . # - Obs     : Using.                                                                     -#
+ . #                                                                                        -#
+ . # - Titulo  : Oracle_prompt_sql.                                                         -#
+ . # - Tema    : conect and consult.                                                        -#
+ . # - Autor   : Hernaldo Meneses                                                           -#
+ . # - Created : 25/10/2023                                                                 -#
+ . # - more info and of Script.                                                             -#
+ . #-----------------------------------------------------------------------------------------#

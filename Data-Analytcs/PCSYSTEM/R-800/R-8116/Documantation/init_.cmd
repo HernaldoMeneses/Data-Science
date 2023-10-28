@@ -1,24 +1,12 @@
 @echo off
 cls
-mode con: cols=100 lines=100
+mode con: cols=100 lines=120
 color 01
 title Documantation R-8116
 echo .
-echo -                                  Fluxo de Desenvolvimento
+type head.txt
 echo .
-echo . #-----------------------------------------------------------------------------------------#
-echo . #                                                                                        -#
-echo . # - Objetivo: Docmantation R-8116                                                        -#
-echo . # - Obs     : Using.                                                                     -#
-echo . #                                                                                        -#
-echo . # - Titulo  : Oracle_prompt_sql.                                                         -#
-echo . # - Tema    : conect and consult.                                                        -#
-echo . #                                                                                        -#
-echo . # - Autor   : Hernaldo Meneses                                                           -#
-echo . # - Created : 25/10/2023                                                                 -#
-echo . # - more info and of Script.                                                             -#
-echo . #-----------------------------------------------------------------------------------------#
-echo .
+pause
 echo . __________________________________________________________________________________________
 echo .   Ben vindo a Docomentation de desenvolvimento da rotina R-8116 by Hm_  (Matrix_Reloaded) 
 echo . __________________________________________________________________________________________
@@ -42,3 +30,4 @@ echo . #------------------------------------------------------------------------
 echo .
 echo -                                  version 1.0 by H.Meneses
 echo .
+pause
