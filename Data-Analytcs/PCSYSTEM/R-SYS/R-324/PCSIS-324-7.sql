@@ -1,3 +1,15 @@
+--#-----------------------------------------------------------------------------------------#
+--# - Objetivo: Help to conetct and colsult Oracle Data base by Prompt                     -#
+--# - Obs     : Using.                                                                     -#
+--#                                                                                        -#
+--# - Titulo  : Oracle_prompt_sql.                                                         -#
+--# - Tema    : conect and consult.                                                        -#
+--#                                                                                        -#
+--# - Autor   : Hernaldo Meneses                                                           -#
+--# - Criação : 25/10/2023                                                                 -#
+--# - more info and of Script.                                                             -#
+--#-----------------------------------------------------------------------------------------#
+
 SELECT PCPEDI.CODPROD, PCPRODUT.DESCRICAO, PCPRODUT.CODFAB,
 PCPRODUT.EMBALAGEM, PCPRODUT.UNIDADE, TO_CHAR(PCPRODUT.MARCA) MARCA, PCFORNEC.FORNECEDOR, 
 PCPRODUT.CLASSE,

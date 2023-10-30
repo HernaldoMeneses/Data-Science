@@ -1,23 +1,16 @@
-SELECT  PCPEDC.CODSUPERVISOR CODSUPERVISOR, PCPEDC.CODGERENTE, PCPEDC.POSICAO,PCPEDC.DATA,PCPEDC.CODUSUR,PCPEDC.CODFILIAL, PCPRODUT.CODEPTO, PCFORNEC.codfornec,PCPRODUT.CODPROD, PCPEDC.CODCLI,
-       SUM(CASE                                                                                                                            
-             WHEN NVL(PCPEDI.BONIFIC, 'N') = 'N' THEN                                                                                  
-              DECODE(PCPEDC.CONDVENDA,                                                                                                     
-                     5,                                                                                                                    
-                    0,
-                     6,                                                                                                                    
-                     0,                                                                                                                    
-                     11,                                                                                                                   
-                     0,                                                                                                                    
-                     12,                                                                                                                   
-                     0,                                                                                                                    
-                     NVL(PCPEDI.VLSUBTOTITEM,                                                                                              
-                         (DECODE(NVL(PCPEDI.TRUNCARITEM, 'N'),                                                                           
-                                 'N',                                                                                                    
-                                 ROUND((NVL(PCPEDI.QT, 0)) * (NVL(PCPEDI.PVENDA, 0) + nvl(pcpedi.vloutrasdesp,0) + 
-nvl(pcpedi.vlfrete,0)), 
-                                       2),                                                                                                 
-                                 TRUNC((NVL(PCPEDI.QT, 0)) * (NVL(PCPEDI.PVENDA, 0) + nvl(pcpedi.vloutrasdesp,0) + 
-nvl(pcpedi.vlfrete,0)), 
+SELECT  
+    PCPEDC.CODSUPERVISOR CODSUPERVISOR
+    , PCPEDC.CODGERENTE
+    , PCPEDC.POSICAO
+    , PCPEDC.DATA
+    , PCPEDC.CODUSUR
+    , PCPEDC.CODFILIAL
+    , PCPRODUT.CODEPTO
+    , PCFORNEC.codfornec
+    ,PCPRODUT.CODPROD
+    , PCPEDC.CODCLI
+        , SUM(CASE WHEN NVL(PCPEDI.BONIFIC, 'N') = 'N' THEN   DECODE(PCPEDC.CONDVENDA, 5,  0, 6, 0, 11, 0, 12, 0,  NVL(PCPEDI.VLSUBTOTITEM,    (DECODE(NVL(PCPEDI.TRUNCARITEM, 'N'),   'N',                                                                                                    
+                                 ROUND((NVL(PCPEDI.QT, 0)) * (NVL(PCPEDI.PVENDA, 0) + nvl(pcpedi.vloutrasdesp,0) + nvl(pcpedi.vlfrete,0)),  2), TRUNC((NVL(PCPEDI.QT, 0)) * (NVL(PCPEDI.PVENDA, 0) + nvl(pcpedi.vloutrasdesp,0) + nvl(pcpedi.vlfrete,0)), 
                                        2)))))                                                                                              
              ELSE                                                                                                                          
     0 
@@ -37,8 +30,8 @@ nvl(pcpedi.vlfrete,0)),
                     0
                       END) VLVENDA,                                                                                                        
    SUM((PCPEDI.qt)*NVL(PCPEDI.vlcustofin,0)) AS VLCUSTOFIN,
-   SUM(DECODE(PCPEDC.CONDVENDA,1,CASE WHEN NVL(PCPEDI.BONIFIC, 'N') <> 'N' THEN 0 ELSE NVL(PCPEDI.QT, 0) END,5,0,6,0,11,0,12,0,
-NVL(PCPEDI.QT,0))) QT,
+   SUM(DECODE(PCPEDC.CONDVENDA,1,CASE WHEN NVL(PCPEDI.BONIFIC, 'N') <> 'N' THEN 0 ELSE NVL(PCPEDI.QT, 0) END,5,0,6,0,11,0,12,0, NVL(PCPEDI.QT,0))) QT,
+ROUND(SUM(NVL(PCPEDI.QT,0) / DECODE(NVL(PCPRODUT.QTUNITCX,0),0,1,NVL(PCPRODUT.QTUNITCX,1))),2) AS QT_Cx,
 SUM(DECODE(PCPEDC.CONDVENDA,1,CASE WHEN NVL(PCPEDI.BONIFIC, 'N') IN ('S','F') THEN NVL(PCPEDI.QT, 0) ELSE 0 END,5,NVL(PCPEDI.QT,
  0),6,NVL(PCPEDI.QT, 0),11,NVL(PCPEDI.QT, 0),12,NVL(PCPEDI.QT, 0),0)) QTBNF,
 COUNT(DISTINCT PCCLIENT.CODCLI) AS QTCLIENTE,
@@ -89,12 +82,12 @@ FROM PCPEDI
 , PCFORNEC
 
 WHERE 1=1
---and(PCPEDC.DATA BETWEEN '01/01/2023' AND '31/08/2023')
---AND (PCPEDI.DATA BETWEEN '01/01/2023' AND '31/08/2023')
+and PCPEDC.DATA >= to_date('01/10/2023','dd/mm/yyyy') and PCPEDC.DATA <= to_date('31/10/2023','dd/mm/yyyy')
+AND PCPEDI.DATA >= to_date('01/10/2023','dd/mm/yyyy') AND PCPEDI.DATA <= to_date('31/10/2023','dd/mm/yyyy')
 
 
-AND TO_CHAR(PCPEDC.DATA , 'YYYY') >= TO_CHAR(ADD_MONTHS(SYSDATE, -24), 'YYYY')
-AND TO_CHAR(PCPEDI.DATA , 'YYYY') >= TO_CHAR(ADD_MONTHS(SYSDATE, -24), 'YYYY')
+--AND TO_CHAR(PCPEDC.DATA , 'YYYY') >= TO_CHAR(ADD_MONTHS(SYSDATE, -24), 'YYYY')
+--AND TO_CHAR(PCPEDI.DATA , 'YYYY') >= TO_CHAR(ADD_MONTHS(SYSDATE, -24), 'YYYY')
 
 AND PCPEDI.NUMPED = PCPEDC.NUMPED
 AND  PCPEDC.CODSUPERVISOR  = PCSUPERV.CODSUPERVISOR
@@ -105,9 +98,9 @@ AND PCPEDC.CODCLI = PCCLIENT.CODCLI
 AND PCPEDC.CODPRACA = PCPRACA.CODPRACA
 AND PCPEDC.DTCANCEL IS NULL
 AND PCPRODUT.CODFORNEC = PCFORNEC.CODFORNEC
+AND PCPRODUT.CODFORNEC = 3091
 AND PCPEDC.CODFILIAL IN ('2')
 AND PCPEDC.CONDVENDA NOT IN (4,8,10,13,20,98,99)
 
 GROUP BY  PCPEDC.CODSUPERVISOR , PCSUPERV.NOME, PCPEDC.POSICAO, PCPEDC.DATA, PCPEDC.CODUSUR, PCPEDC.CODFILIAL, PCPRODUT.CODEPTO, PCFORNEC.codfornec, PCPRODUT.CODPROD, PCPEDC.CODCLI, PCPEDC.CODGERENTE
 ORDER BY VLVENDA
-
