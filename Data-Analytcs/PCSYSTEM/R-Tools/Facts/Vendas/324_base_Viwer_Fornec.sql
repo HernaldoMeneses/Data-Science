@@ -22,6 +22,8 @@ SELECT
     , PCCLIENT.CLIENTE
 
 /*Columns with functions agrup*/
+
+/*Init Venda*/
     ,   SUM(CASE                                                                                                                            
              WHEN NVL(PCPEDI.BONIFIC, 'N') = 'N' THEN                                                                                  
               DECODE(PCPEDC.CONDVENDA,                                                                                                     
@@ -37,14 +39,12 @@ SELECT
                          (DECODE(NVL(PCPEDI.TRUNCARITEM, 'N'),                                                                           
                                  'N',                                                                                                    
                                  ROUND((NVL(PCPEDI.QT, 0)) * (NVL(PCPEDI.PVENDA, 0) + nvl(pcpedi.vloutrasdesp,0) + 
-nvl(pcpedi.vlfrete,0)), 
+                                    nvl(pcpedi.vlfrete,0)), 
                                        2),                                                                                                 
                                  TRUNC((NVL(PCPEDI.QT, 0)) * (NVL(PCPEDI.PVENDA, 0) + nvl(pcpedi.vloutrasdesp,0) + 
-nvl(pcpedi.vlfrete,0)), 
+                                    nvl(pcpedi.vlfrete,0)), 
                                        2)))))                                                                                              
-             ELSE                                                                                                                          
-    0 
-           END) - SUM(CASE                                                                                                                 
+             ELSE  0  END) - SUM(CASE                                                                                                                 
                         WHEN NVL(PCPEDI.BONIFIC, 'N') = 'N' THEN                                                                       
                          DECODE(PCPEDC.CONDVENDA,                                                                                          
                                 5,                                                                                                         
@@ -56,9 +56,9 @@ nvl(pcpedi.vlfrete,0)),
                                 12,                                                                                                        
                                 0,                                                                                                         
                                 NVL(PCPEDI.qt, 0) * (0 + 0))                                                                               
-                        ELSE                                                                                                               
-                    0
-                      END) VLVENDA,                                                                                                        
+                        ELSE 0 END) VLVENDA,
+/*End Venda*/ 
+
    SUM((PCPEDI.qt)*NVL(PCPEDI.vlcustofin,0)) AS VLCUSTOFIN,
    SUM(DECODE(PCPEDC.CONDVENDA,1,CASE WHEN NVL(PCPEDI.BONIFIC, 'N') <> 'N' THEN 0 ELSE NVL(PCPEDI.QT, 0) END,5,0,6,0,11,0,12,0,
 NVL(PCPEDI.QT,0))) QT,
