@@ -23,7 +23,7 @@ SELECT
 
 /*Columns with functions agrup*/
 
-/*Init Venda*/
+/*Init VLVENDA*/
     ,   SUM(CASE                                                                                                                            
              WHEN NVL(PCPEDI.BONIFIC, 'N') = 'N' THEN                                                                                  
               DECODE(PCPEDC.CONDVENDA,                                                                                                     
@@ -57,16 +57,16 @@ SELECT
                                 0,                                                                                                         
                                 NVL(PCPEDI.qt, 0) * (0 + 0))                                                                               
                         ELSE 0 END) VLVENDA,
-/*End Venda*/ 
+/*End VLVENDA*/ 
 
-   SUM((PCPEDI.qt)*NVL(PCPEDI.vlcustofin,0)) AS VLCUSTOFIN,
-   SUM(DECODE(PCPEDC.CONDVENDA,1,CASE WHEN NVL(PCPEDI.BONIFIC, 'N') <> 'N' THEN 0 ELSE NVL(PCPEDI.QT, 0) END,5,0,6,0,11,0,12,0,
-NVL(PCPEDI.QT,0))) QT,
-SUM(DECODE(PCPEDC.CONDVENDA,1,CASE WHEN NVL(PCPEDI.BONIFIC, 'N') IN ('S','F') THEN NVL(PCPEDI.QT, 0) ELSE 0 END,5,NVL(PCPEDI.QT,
- 0),6,NVL(PCPEDI.QT, 0),11,NVL(PCPEDI.QT, 0),12,NVL(PCPEDI.QT, 0),0)) QTBNF,
-COUNT(DISTINCT PCCLIENT.CODCLI) AS QTCLIENTE,
-SUM( NVL(PCPEDI.QT,0) * NVL(PCPRODUT.PESOBRUTO,0) ) AS PESO,
-COUNT(DISTINCT(PCPEDC.NUMPED)) AS QTPED, 
+    SUM((PCPEDI.qt)*NVL(PCPEDI.vlcustofin,0)) AS VLCUSTOFIN,
+    SUM(DECODE(PCPEDC.CONDVENDA,1,CASE WHEN NVL(PCPEDI.BONIFIC, 'N') <> 'N' THEN 0 ELSE NVL(PCPEDI.QT, 0) END,5,0,6,0,11,0,12,0, NVL(PCPEDI.QT,0))) QT,
+    SUM(DECODE(PCPEDC.CONDVENDA,1,CASE WHEN NVL(PCPEDI.BONIFIC, 'N') IN ('S','F') THEN NVL(PCPEDI.QT, 0) ELSE 0 END,5,NVL(PCPEDI.QT, 0),6,NVL(PCPEDI.QT, 0),11,NVL(PCPEDI.QT, 0),12,NVL(PCPEDI.QT, 0),0)) QTBNF,
+    COUNT(DISTINCT PCCLIENT.CODCLI) AS QTCLIENTE,
+    SUM( NVL(PCPEDI.QT,0) * NVL(PCPRODUT.PESOBRUTO,0) ) AS PESO,
+    COUNT(DISTINCT(PCPEDC.NUMPED)) AS QTPED, 
+
+/*Init VLBONIFIC*/
        SUM(DECODE(PCPEDC.CONDVENDA,                                                                                                        
                   5,                                                                                                                       
                   NVL(PCPEDI.QT, 0) *                                                                                                      
@@ -100,7 +100,9 @@ COUNT(DISTINCT(PCPEDC.NUMPED)) AS QTPED,
                          0,                                                                                                                
                          PCPEDI.PTABELA,                                                                                                   
                          PCPEDI.PBONIFIC),                                                                                                 
-                  0)) VLBONIFIC                                                                                                            
+                  0)) VLBONIFIC 
+/*End VLBONIFIC */ 
+
 FROM 
     PCPEDI
     , PCPEDC
