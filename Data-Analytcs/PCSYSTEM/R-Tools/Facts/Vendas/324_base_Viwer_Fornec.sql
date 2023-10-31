@@ -24,39 +24,24 @@ SELECT
 /*Columns with functions agrup*/
 
 /*Init VLVENDA*/
-    ,   SUM(CASE                                                                                                                            
-             WHEN NVL(PCPEDI.BONIFIC, 'N') = 'N' THEN                                                                                  
-              DECODE(PCPEDC.CONDVENDA,                                                                                                     
-                     5,                                                                                                                    
-                    0,
-                     6,                                                                                                                    
-                     0,                                                                                                                    
-                     11,                                                                                                                   
-                     0,                                                                                                                    
-                     12,                                                                                                                   
-                     0,                                                                                                                    
-                     NVL(PCPEDI.VLSUBTOTITEM,                                                                                              
-                         (DECODE(NVL(PCPEDI.TRUNCARITEM, 'N'),                                                                           
-                                 'N',                                                                                                    
-                                 ROUND((NVL(PCPEDI.QT, 0)) * (NVL(PCPEDI.PVENDA, 0) + nvl(pcpedi.vloutrasdesp,0) + 
-                                    nvl(pcpedi.vlfrete,0)), 
-                                       2),                                                                                                 
-                                 TRUNC((NVL(PCPEDI.QT, 0)) * (NVL(PCPEDI.PVENDA, 0) + nvl(pcpedi.vloutrasdesp,0) + 
-                                    nvl(pcpedi.vlfrete,0)), 
-                                       2)))))                                                                                              
-             ELSE  0  END) - SUM(CASE                                                                                                                 
-                        WHEN NVL(PCPEDI.BONIFIC, 'N') = 'N' THEN                                                                       
-                         DECODE(PCPEDC.CONDVENDA,                                                                                          
-                                5,                                                                                                         
-                                0,                                                                                                         
-                                6,                                                                                                         
-                                0,                                                                                                         
-                                11,                                                                                                        
-                                0,                                                                                                         
-                                12,                                                                                                        
-                                0,                                                                                                         
-                                NVL(PCPEDI.qt, 0) * (0 + 0))                                                                               
-                        ELSE 0 END) VLVENDA,
+    ,   SUM(CASE WHEN NVL(PCPEDI.BONIFIC, 'N') = 'N'                                                                                  
+                    THEN DECODE(PCPEDC.CONDVENDA,                                                                                                     
+                            5,     0,
+                            6,     0,                                                                                                                    
+                            11,    0,                                                                                                                    
+                            12,    0,                                                                                                                    
+                            NVL(PCPEDI.VLSUBTOTITEM,                                                                                              
+                                (DECODE(NVL(PCPEDI.TRUNCARITEM, 'N'), 'N',                                                                                                    
+                                        ROUND((NVL(PCPEDI.QT, 0)) * (NVL(PCPEDI.PVENDA, 0) + nvl(pcpedi.vloutrasdesp,0) + nvl(pcpedi.vlfrete,0)), 2),                                                                                                 
+                                        TRUNC((NVL(PCPEDI.QT, 0)) * (NVL(PCPEDI.PVENDA, 0) + nvl(pcpedi.vloutrasdesp,0) +  nvl(pcpedi.vlfrete,0)), 2)))))                                                                                             
+                ELSE 0 END) - SUM(CASE WHEN NVL(PCPEDI.BONIFIC, 'N') = 'N'                                                                       
+                                                THEN DECODE(PCPEDC.CONDVENDA,                                                                                          
+                                                        5,      0,                                                                                                         
+                                                        6,      0,                                                                                                         
+                                                        11,     0,                                                                                                         
+                                                        12,     0,                                                                                                         
+                                                        NVL(PCPEDI.qt, 0) * (0 + 0))                                                                               
+                                                ELSE 0 END) VLVENDA,
 /*End VLVENDA*/ 
 
     SUM((PCPEDI.qt)*NVL(PCPEDI.vlcustofin,0)) AS VLCUSTOFIN,
@@ -133,14 +118,24 @@ WHERE 1=1
     AND PCPEDC.CODPRACA = PCPRACA.CODPRACA
     AND PCPRODUT.CODFORNEC = PCFORNEC.CODFORNEC
 
-/*ParametsFills rESTICTIONS*/
+/*ParametsFills rESTICTIONS to use in case
     AND PCPEDC.DTCANCEL IS NULL
     AND PCPEDC.CODFILIAL IN ('2')
     AND PCPEDC.CONDVENDA NOT IN (4,8,10,13,20,98,99)
+    AND PCPEDC.CODCLI in (:COD_Clis)
+    AND  PCPEDC.CODFILIAL      in (:COD_Filial)
+    AND  PCPEDC.CODGERENTE     in (:COD_Gerent)
+    AND  PCPEDC.CODSUPERVISOR  in (:COD_Superv)
+    AND  PCPEDC.CODUSUR        in (:Cod_RCAs)
+    --AND PCPRODUT.CODFORNEC = 3715 -- Leblom
+    --AND PCPRODUT.CODFORNEC = 3091 -- Massa Leve
+    AND PCPRODUT.CODFORNEC in (:COD_Fornecs)
+    AND  PCPRODUT.CODPROD in(:Cod_Prod)
+    AND  PCPEDC.CODCLI in (:COD_Clie)
+*********************/
+    AND PCPRODUT.CODFORNEC in (:COD_Fornecs)
 
---AND PCPRODUT.CODFORNEC = 3715 -- Leblom
---AND PCPRODUT.CODFORNEC = 3091 -- Massa Leve
-    AND PCPRODUT.CODFORNEC = (:COD_Fornec)
+
 
 /*General Grup for all columns without function agrup in line*/
 GROUP BY
