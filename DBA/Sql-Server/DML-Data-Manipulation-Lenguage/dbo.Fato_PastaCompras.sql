@@ -126,4 +126,10 @@ INSERT INTO [dbo].[Fato_PastaCompras]
 
 GO
 
+TendênciaVenda:=[Valor Venda Total]/[QuantidadeDiasUteisCorridos]*[QuantidadesDiasUteis]
 
+Venda por Industria:=if([Venda-por-Meta]>=(97/100);1;0)
+
+
+Vend_por_Indust
+=if([%_Real_Venda]>=0,97;1;0)

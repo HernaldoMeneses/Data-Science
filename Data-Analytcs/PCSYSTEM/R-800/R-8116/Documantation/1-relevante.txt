@@ -1,0 +1,17 @@
+
+
+Encontrado Filtro em campo wm_rel8008 da tabela pcfornec.
+para os cálculos realizados via função FNC_WN_PREMIACAO_COMISSAO
+
+Tendo em vista os relatórios iniciados com 80 serem personalizados, o campo na tabela pcfornec
+relacionando à rotina, muito provável seja, tabmém, manualmente inserido.
+
+Precisamos encontrar os motivos de tais modificações na tabela oficial.
+
+segue o código.
+and PCFORNEC.Codfornec in (select p.codfornec from pcfornec p where p.wn_rel8008='S')
+
+O Filtro acaba por divergir os valores das rotinas 8116 e 8032, pois 
+devido ao filtro, os fornecedores considerados não são os mesmos.
+
+by HMeneses...
