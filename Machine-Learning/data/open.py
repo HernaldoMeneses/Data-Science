@@ -1,11 +1,21 @@
+#os arquivos xlsx precisam ter cabeçalho
+
 import pandas as pd
-# Carregue a planilha em formato XLSX
 
-xlsx_df = pd.read_excel('103.xlsx')
+txe = '.xlsx'
+ext = '.csv'
+pwd = "E:\\Github\\Data-Science\\Machine-Learning\\data\\"
 
-df = xlsx_df
-print(df)
-path = "E:\\Data-Since\\R\\11-2023\\"
-name = "103.csv"
- # O argumento 'index=False' evita que o índice seja salvo no arquivo
-df.to_csv((path+name), index=False) 
+list = ['103','105']
+
+for i in range(len(list)):
+    #df = pd.read_excel('103.xlsx')
+    #df = pd.read_excel('103'+txe)
+    df = pd.read_excel(list[i]+txe)
+    print(df)
+    #name = "103.csv"
+    #name = "103"+ext
+    name = list[i]+ext
+    # O argumento 'index=False' evita que o índice seja salvo no arquivo
+    #df.to_csv((path+name), index=False) 
+    df.to_csv((pwd+name), index=False) 

@@ -1,12 +1,12 @@
 
-path <- "E:\\Data-Since\\R\\11-2023"
-
+#path <- "E:\\Data-Since\\R\\11-2023"
+pwd = "E:\\Github\\Data-Science\\Machine-Learning\\data\\"
 
 
 
 csv_file <- "103.csv"
 #setando o local de trabalho
-setwd(path)
+setwd(pwd)
 
 # Leia a planilha do arquivo XLSX
 csv_df <- read.csv(csv_file, sep = ",")
