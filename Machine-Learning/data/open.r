@@ -20,21 +20,21 @@ df <- csv_df
 #?View
 #View(df,"deucerto")
 #View(df)
-str(df)
+#str(df)
 summary(df)
-str(df$id)
-str(df$CodFornecedor)
-class(df$id)
-class(df$CodFornecedor)
-class(df$Fornecedor)
-class(df$CodProduto)
-df$CodFornecedor
+#str(df$id)
+#str(df$CodFornecedor)
+#class(df$id)
+#class(df$CodFornecedor)
+#class(df$Fornecedor)
+#class(df$CodProduto)
+#df$CodFornecedor
 
-fat_df <- df[1:3]
-str(fat_df)
+#fat_df <- df[1:3]
+#str(fat_df)
 
-?c
-df[0]
+#?c
+#df[0]
 
 
 
