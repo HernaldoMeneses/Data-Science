@@ -5,13 +5,13 @@ import pandas as pd
 txe = '.xlsx'
 ext = '.csv'
 pwd = "E:\\Github\\Data-Science\\Machine-Learning\\data\\"
-
-list = ['103','105']
+h = 'header_'
+list = ['103','105','324_8']
 
 for i in range(len(list)):
     #df = pd.read_excel('103.xlsx')
     #df = pd.read_excel('103'+txe)
-    df = pd.read_excel(list[i]+txe)
+    df = pd.read_excel(h+list[i]+txe)
     print(df)
     #name = "103.csv"
     #name = "103"+ext
