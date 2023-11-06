@@ -63,5 +63,5 @@ result['Dias_Estoques'] = result.apply(lambda row: divisao_com_tratamento(row[2]
 
 # O DataFrame resultante, 'df', agora contém a coluna 'resultado' com divisões tratadas por 0
 print(result)
-name = "Result"
+name = "Result"+ext
 result.to_csv((pwd+name), index=False) 

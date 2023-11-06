@@ -1,16 +1,17 @@
+select  MainTabFat.*,  pcfornec.fornecedor, pcprodut.DESCRICAO As DescricaoProduto from (
 SELECT 
  to_date(A.DTMOV,'dd/mm/yyyy') As Data
 , substr(to_char(A.DTMOV),1,2) as dia
 , substr(to_char(A.DTMOV),4,2) as mes
 , substr(to_char(A.DTMOV),7,4) as ano
 
-
+, A.CODCLI
 , A.NUMNOTA
 , A.CODFORNEC
 , A.CODPROD
 , A.CODFISCAL
 --, A.QT
-,A.QTCONT
+, A.QTCONT
 , Round(A.PUNITCONT,2) AS PUNID
 --, A.QT * A.PUNITCONT AS TOTAL
  
@@ -44,7 +45,7 @@ SELECT
 --, A.QTCONT *  A.PUNITCONT AS VLTOTAL
 , A.RoTinalanc
 , A.CODFUNCLANC
-
+, A.FUNCLANC
 FROM PCMOV A,
      PCNFSAID SA, 
      PCMOVCOMPLE C
@@ -54,8 +55,20 @@ WHERE
   --AND A.NUMNOTA = 9681
   AND A.NUMTRANSVENDA > 0
   AND A.STATUS <> 'B'
-  AND A.CODFISCAL = 5927
-    And A.NUMNOTA = 3432366
+ -- AND A.CODFISCAL = 5927
+   -- And A.NUMNOTA = 3432366
     --AND  A.DTMOV >= to_date('01/09/2023','dd/mm/yyyy')
   --AND  A.DTMOV < to_date('01/10/2023','dd/mm/yyyy')
+
+AND A.CODFISCAL =  :CODFISCAL
+
+--AND DTMOV >= To_date('01/01/2023','dd/mm/yyyy')
+AND A.DTMOV >= To_date(:Data_init,'dd/mm/yyyy')
+AND A.DTMOV <= To_date(:Data_final,'dd/mm/yyyy')
+
+
 ORDER BY  A.DTMOV, A.NUMNOTA, A.CODPROD
+) MainTabFat, pcfornec, pcprodut
+
+where MainTabFat.codfornec = pcfornec.codfornec
+and MainTabFat.codprod = pcprodut.codprod

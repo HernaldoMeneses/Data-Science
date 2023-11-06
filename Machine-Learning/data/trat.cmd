@@ -1,4 +1,4 @@
 python opentrat.py
 pause
-rxcript opentrat.r
+rscript opentrat.r
 pause
