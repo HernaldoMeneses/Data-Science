@@ -4,7 +4,8 @@ import pandas as pd
 
 txe = '.xlsx'
 ext = '.csv'
-pwd = "E:\\Github\\Data-Science\\Machine-Learning\\data\\"
+#pwd = "E:\\Github\\Data-Science\\Machine-Learning\\data\\"
+pwd = "D:\\Github\\Data-Science\\Machine-Learning\\data\\"
 h = 'header_'
 list = ['103','105','324_8']
 
@@ -62,4 +63,5 @@ result['Dias_Estoques'] = result.apply(lambda row: divisao_com_tratamento(row[2]
 
 # O DataFrame resultante, 'df', agora contém a coluna 'resultado' com divisões tratadas por 0
 print(result)
-
+name = "Result"
+result.to_csv((pwd+name), index=False) 
