@@ -1,0 +1,2 @@
+python opentrat.py
+pause
