@@ -5,11 +5,21 @@ import pandas as pd
 txe = '.xlsx'
 ext = '.csv'
 #pwd = "E:\\Github\\Data-Science\\Machine-Learning\\data\\"
-pwd = "D:\\Github\\Data-Science\\Machine-Learning\\data\\"
+#pwd = "D:\\Github\\Data-Science\\Machine-Learning\\data\\"
+# Abre o arquivo no modo de leitura
+with open('pwd.txt', 'r') as file:
+    # Lê o conteúdo do arquivo e armazena em uma variável
+    string_lida = file.read()
+
+# Agora, a variável 'string_lida' contém o conteúdo do arquivo
+# print(string_lida)
+pwd = string_lida.replace("\n","")
+directory = "\\trat\\"
+
 h = 'header_'
 list = ['103','105','324_8']
 
-df = pd.read_excel(h+list[0]+txe)
+df = pd.read_excel(pwd+directory+h+list[0]+txe)
 #print(df)
 
 #dft = df.loc[:, ['coluna1', 'coluna2', 'coluna3']]
@@ -21,7 +31,7 @@ print(df)
 
 df1 = df
 
-df = pd.read_excel(h+list[1]+txe)
+df = pd.read_excel(pwd+directory+h+list[1]+txe)
 df = df[df.iloc[:, 3] != 'FL']
 print(df)
 df = df.iloc[:, [0, 9, 12]]
@@ -64,4 +74,6 @@ result['Dias_Estoques'] = result.apply(lambda row: divisao_com_tratamento(row[2]
 # O DataFrame resultante, 'df', agora contém a coluna 'resultado' com divisões tratadas por 0
 print(result)
 name = "Result"+ext
-result.to_csv((pwd+name), index=False) 
+directory = "\\csv_data\\"
+result.to_csv((pwd+directory+name), index=False) 
+print("Fim Python opentrat\n")
