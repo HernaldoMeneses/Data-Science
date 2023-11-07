@@ -1,7 +1,11 @@
 select 
 tab_r.CodGerente
 , tab_r.CodSupervisor
+, tab_r.Nome_Superv
+, tab_r.CODFORNEC
+, tab_r.fornecedor
 , tab_r.CodUsur
+, tab_r.nome
 , tab_r.CodCidade
 , tab_r.NomeCidade
 , tab_r.QtCliAtivos
@@ -11,10 +15,21 @@ tab_r.CodGerente
 , tab_r.PVENDA 
  from 
 (Select
-tab2_qtcliativos.QTCLIATIVOS
-, tab1_base.*  
+tab2_qtcliativos.QTCLIATIVOS 
+,tab1_base.codgerente, tab1_base.codsupervisor
+, tab1_base.CODFORNEC, tab1_base.fornecedor 
+, tab1_base.Nome_Superv, tab1_base.codusur, tab1_base.nome, tab1_base.CODCIDADE, tab1_base.NOMECIDADE,
+       tab1_base.QT,
+       tab1_base.QTCLIPOS,
+       tab1_base.PVENDA
+
+
 from (
-SELECT pcsuperv.codgerente, PCUSUari.codsupervisor, PCUSUARI.codusur, PCCIDADE.CODCIDADE, PCCIDADE.NOMECIDADE,
+SELECT pcsuperv.codgerente
+    , PCUSUari.codsupervisor, pcsuperv.nome As Nome_Superv
+    , PCPRODUT.CODFORNEC, PCFORNEC.fornecedor
+    , PCUSUARI.codusur, PCUSUARI.nome
+    , PCCIDADE.CODCIDADE, PCCIDADE.NOMECIDADE,
        SUM(PCPEDI.QT) AS QT,
        COUNT(DISTINCT(PCPEDC.CODCLI)) QTCLIPOS,
        SUM(ROUND(NVL(PCPEDI.QT,0)*(NVL(PCPEDI.PVENDA, 0) + NVL(PCPEDI.VLOUTRASDESP, 0) + NVL(PCPEDI.VLFRETE, 0)),2)) AS PVENDA,
@@ -28,6 +43,12 @@ WHERE PCPEDI.NUMPED = PCPEDC.NUMPED
 AND PCUSUARI.CODSUPERVISOR NOT IN ('9999')
 AND pcsuperv.codsupervisor = PCUSUARI.CODSUPERVISOR
 AND PCPEDC.DATA BETWEEN :DATAI AND :DATAF
+
+AND pcsuperv.codgerente in (:Cod_Ger)
+AND PCUSUari.codsupervisor in (:Cod_Superv)
+AND PCUSUARI.codusur in (:Cod_Rca)
+AND PCPRODUT.CODFORNEC in (:cod_fornec)
+
 AND PCPEDC.CODFILIAL IN ('2')
 AND PCPEDC.CONDVENDA IN (1, 2, 3, 7, 9, 14, 15, 17, 18, 19, 98)
  AND NVL(PCPEDI.BONIFIC, 'N') =  'N' 
@@ -40,7 +61,7 @@ AND PCPRACA.CODPRACA   = PCCLIENT.CODPRACA(+)
 AND PCPRODUT.CODFORNEC = PCFORNEC.CODFORNEC(+)
 AND PCPEDC.CODUSUR     = PCUSUARI.CODUSUR(+)
 AND PCCLIENT.CODCIDADE = PCCIDADE.CODCIDADE(+)
-GROUP BY pcsuperv.codgerente, PCUSUari.codsupervisor, PCUSUARI.codusur, PCCIDADE.CODCIDADE, PCCIDADE.NOMECIDADE
+GROUP BY pcsuperv.codgerente, PCUSUari.codsupervisor, PCPRODUT.CODFORNEC, PCFORNEC.fornecedor, pcsuperv.nome, PCUSUARI.codusur, PCUSUARI.nome, PCCIDADE.CODCIDADE, PCCIDADE.NOMECIDADE
 ORDER BY PVENDA DESC
 ) tab1_base,
 (
@@ -62,5 +83,10 @@ Group BY PCUSUArI.codusur
 ) tab2_qtcliativos
 Where tab1_base.codusur = tab2_qtcliativos.codusur
 
-And Rownum < 5
 ) tab_r
+
+Order by
+tab_r.CodGerente
+, tab_r.CodSupervisor
+, tab_r.CodUsur
+, tab_r.CodCidade

@@ -40,7 +40,7 @@ summary(df)
 options(repos = c(CRAN = "https://cloud.r-project.org"))
 
 
-#install.packages("ggplot2")
+install.packages("ggplot2")
 
 # Carregue a biblioteca ggplot2
 library(ggplot2)
@@ -63,10 +63,12 @@ ggplot(data = seu_dataframe, aes(x = qtAtivos, y = ValorStoAtual)) +
 # Carregue a biblioteca ggplot2
 library(ggplot2)
 seu_dataframe <- df
+data(df)
 # Suponha que você deseja usar a primeira e segunda coluna do DataFrame
 # Substitua "seu_dataframe" pelo nome do seu DataFrame
 ggplot(data = seu_dataframe, aes(x = seu_dataframe[, 1], y = seu_dataframe[, 2])) +
   geom_point() +
+  geom_smooth(method = "lm") +
   labs(x = "Título do Eixo X", y = "Título do Eixo Y") +
   ggtitle("Título do Gráfico")
 
