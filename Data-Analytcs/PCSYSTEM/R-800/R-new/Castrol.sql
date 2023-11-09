@@ -1,4 +1,5 @@
-Select Fat.Codmarca, Fat.Marca, fat.codusur, fat.nome, fat.pvenda, fat.totpeso
+Select 
+Fat.Codmarca, Fat.Marca, fat.codusur, fat.nome, fat.pvenda, fat.totpeso
 
 , inad.QTTITULOS       
 , inad.VLTITULOS
@@ -106,7 +107,7 @@ SELECT TOTAL.CODUSUR,
                 ELSE 0                                                      
            END) / ((SELECT DECODE(COUNT(*), 0, 1, (COUNT(*)))  FROM PCPREST 
                         WHERE PCPREST.CODUSUR = PCUSUARI.CODUSUR            
-                        AND PCPREST.DTVENC BETWEEN :DTINI AND :DTFIM        
+                        AND PCPREST.DTVENC BETWEEN :DATAI AND :DATAF       
    AND PCPREST.CODCOB NOT IN ('DEVP', 'DEVT', 'BNF', 'BNFT', 'BNFR', 'BNTR',
                              'BNRP', 'CRED', 'DESD')                  
    AND PCPREST.DTPAG > PCPREST.DTVENC )),2) DIASATRASO

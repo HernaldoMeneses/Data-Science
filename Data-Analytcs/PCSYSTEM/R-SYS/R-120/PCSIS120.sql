@@ -17,7 +17,7 @@ SELECT TOTAL.CODUSUR,
        ,SUM(DECODE(PCPREST.DTPAG,                                            
                   NULL,                                                      
                   CASE                                                       
-                    WHEN DTVENC <= to_date((TRUNC(NVL(:DATAREF,SYSDATE)) - 1),'dd/mm/yyyy') THEN     
+                    WHEN DTVENC <= to_date((TRUNC(SYSDATE) - 1),'dd/mm/yyyy') THEN     
                      PCPREST.VALOR                                           
                     ELSE                                                     
                      0                                                       
@@ -26,7 +26,7 @@ SELECT TOTAL.CODUSUR,
        ,SUM(DECODE(PCPREST.DTPAG,                                            
                   NULL,                                                      
                   CASE                                                       
-                    WHEN DTVENC <= to_date((TRUNC(NVL(:DATAREF,SYSDATE)) - 1),'dd/mm/yyyy') THEN     
+                    WHEN DTVENC <= to_date((TRUNC(SYSDATE) - 1),'dd/mm/yyyy') THEN     
                      1                                                       
                     ELSE                                                     
                      0                                                       
@@ -62,13 +62,10 @@ AND PCPREST.CODCOB NOT IN ('DEVP', 'DEVT', 'BNF', 'BNFT',
  ELSE  
     TRUNC((SYSDATE))-PCPREST.DTVENC END > 0                              
  AND PCPREST.CODFILIAL IN('2') 
- 
-
- 
- 
-                      
+                   
 --AND PCUSUARI.CODUSUR=:CODUSUR                                                                            
-AND PCUSUARI.CODUSUR= 5                                                                            
+--AND PCUSUARI.CODUSUR= 5     
+                                                                       
 GROUP BY PCUSUARI.CODSUPERVISOR                                             
 , PCUSUARI.CODUSUR                                                          
 )                                                                              
