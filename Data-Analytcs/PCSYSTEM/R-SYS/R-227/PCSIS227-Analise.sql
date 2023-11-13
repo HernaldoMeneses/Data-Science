@@ -2,14 +2,16 @@ WITH UNIDADE AS (
   SELECT PCPRODUT.ROWID RID                                                     
        , DECODE(NVL(PCPRODUT.QTUNITCX, 0), 0, 1, PCPRODUT.QTUNITCX) QTUNITCX    
        , DECODE(NVL(PCPRODUT.PESOBRUTO, 0), 0, 1, PCPRODUT.PESOBRUTO) PESOBRUTO 
-    FROM PCPRODUT)                                                              
+    FROM PCPRODUT)  
+                                                                
 SELECT 
-PCPRODUT.CODFORNEC  
+Distinct(PCPRODUT.CODFORNEC)  
 , PCPRODUT.CODPROD
 
 --,  case when  NVL(PCEST.QTGIRODIA,0) != ((NVL(PCEST.QTVENDMES1, 0) + NVL(PCEST.QTVENDMES2, 0) + NVL(PCEST.QTVENDMES3, 0)) / :DIASUTEISTRIMESTRE) then 1 else 0 end c
    , NVL(PCEST.QTGIRODIA,0) GIRODIA_103
-     , ((NVL(PCEST.QTVENDMES1, 0) + NVL(PCEST.QTVENDMES2, 0) + NVL(PCEST.QTVENDMES3, 0)) / :DIASUTEISTRIMESTRE) QTGIRODIA_227 
+ --    , ((NVL(PCEST.QTVENDMES1, 0) + NVL(PCEST.QTVENDMES2, 0) + NVL(PCEST.QTVENDMES3, 0)) / :DIASUTEISTRIMESTRE) QTGIRODIA_227 
+ /*
    , ((NVL(PCEST.QTVENDMES1, 0) + NVL(PCEST.QTVENDMES2, 0) + NVL(PCEST.QTVENDMES3, 0)) 
       / (select 
                --min(Data)
@@ -21,12 +23,12 @@ PCPRODUT.CODFORNEC
                         from 
                            pcdatas a
                         where
-                           TO_CHAR( a.data , 'YYYY') >= TO_CHAR(ADD_MONTHS(SYSDATE, -4), 'YYYY')
-                           AND TO_CHAR( a.data , 'mm') >= TO_CHAR(ADD_MONTHS(SYSDATE, -4), 'mm')
+                           TO_CHAR( a.data , 'YYYY') >= TO_CHAR(ADD_MONTHS(SYSDATE, -3), 'YYYY')
+                           AND TO_CHAR( a.data , 'mm') >= TO_CHAR(ADD_MONTHS(SYSDATE, -3), 'mm')
                      )
          )
     ) QTGIRODIA_util                                                 
-   
+ */  
    , NVL(PCEST.QTVENDMES3, 0) QTVENDMES3
    , NVL(PCEST.QTVENDMES2, 0) QTVENDMES2
    , NVL(PCEST.QTVENDMES1, 0) QTVENDMES1  
@@ -37,25 +39,31 @@ PCPRODUT.CODFORNEC
     ,  NVL(PCEST.QTVENDMES,  0) + NVL(PCEST.QTVENDMES1,  0) + NVL(PCEST.QTVENDMES2,  0) + NVL(PCEST.QTVENDMES3,  0) as QTVENDATotal4
 
   
-     , case when  NVL(PCEST.QTVENDMES3,  0) > 0 then 1 else 0 end qtmes3
-      , case when  NVL(PCEST.QTVENDMES2,  0) > 0 then 1 else 0 end qtmes2  
-        , case when  NVL(PCEST.QTVENDMES1,  0) > 0 then 1 else 0 end qtmes1
-     , case when  NVL(PCEST.QTVENDMES,  0) > 0 then 1 else 0 end qtmes
+   --  , case when  NVL(PCEST.QTVENDMES3,  0) > 0 then 1 else 0 end qtmes3
+   --   , case when  NVL(PCEST.QTVENDMES2,  0) > 0 then 1 else 0 end qtmes2  
+   --     , case when  NVL(PCEST.QTVENDMES1,  0) > 0 then 1 else 0 end qtmes1
+   --  , case when  NVL(PCEST.QTVENDMES,  0) > 0 then 1 else 0 end qtmes
 
           , case when  NVL(PCEST.QTVENDMES3,  0) > 0 
             And  NVL(PCEST.QTVENDMES2,  0) > 0 
             And  NVL(PCEST.QTVENDMES1,  0) > 0 
-            And  NVL(PCEST.QTVENDMES,  0) = 0 
-            then 1 else 0 end AlertRup4
+            --And  NVL(PCEST.QTVENDMES,  0) >= 0 
+            And  (NVL(PCEST.QTESTGER, 0) -  NVL(PCEST.QTRESERV,   0)  - NVL(PCEST.QTPENDENTE, 0) - NVL(PCEST.QTBLOQUEADA, 0))/ NVL(PCEST.QTGIRODIA,0) < 45
+            then power(2,4)else 0 end ARup4
 
-         , case when  NVL(PCEST.QTVENDMES2,  0) > 0 
+         , case when NVL(PCEST.QTVENDMES3,  0) = 0 
+            AND  NVL(PCEST.QTVENDMES2,  0) > 0 
             And  NVL(PCEST.QTVENDMES1,  0) > 0 
-            And  NVL(PCEST.QTVENDMES,  0) = 0 
-            then 1 else 0 end AlertRup3
+            --And  NVL(PCEST.QTVENDMES,  0) = 0 
+            And  (NVL(PCEST.QTESTGER, 0) -  NVL(PCEST.QTRESERV,   0)  - NVL(PCEST.QTPENDENTE, 0) - NVL(PCEST.QTBLOQUEADA, 0))/ NVL(PCEST.QTGIRODIA,0) < 45
+            then power(2,3) else 0 end ARup3
 
-         , case when  NVL(PCEST.QTVENDMES1,  0) > 0 
-            And  NVL(PCEST.QTVENDMES,  0) = 0 
-            then 1 else 0 end AlertRup2
+         , case when NVL(PCEST.QTVENDMES3,  0) = 0 
+            AND  NVL(PCEST.QTVENDMES2,  0) = 0   
+           and NVL(PCEST.QTVENDMES1,  0) > 0 
+            --And  NVL(PCEST.QTVENDMES,  0) = 0 
+            And  (NVL(PCEST.QTESTGER, 0) -  NVL(PCEST.QTRESERV,   0)  - NVL(PCEST.QTPENDENTE, 0) - NVL(PCEST.QTBLOQUEADA, 0))/ NVL(PCEST.QTGIRODIA,0) < 45
+            then power(2,2) else 0 end ARup2
 
      --, ((NVL(PCEST.QTVENDMES1, 0) + NVL(PCEST.QTVENDMES2, 0) + NVL(PCEST.QTVENDMES3, 0)) / 3) QTGIROMES 
 
@@ -63,7 +71,21 @@ PCPRODUT.CODFORNEC
      , NVL(PCEST.QTRESERV,   0) QTRESERV                           
      , NVL(PCEST.QTPENDENTE, 0) QTPENDENTE                          
      , NVL(PCEST.QTBLOQUEADA, 0) QTBLOQUEADA
-     , NVL(PCEST.QTESTGER, 0) -  NVL(PCEST.QTRESERV,   0)  - NVL(PCEST.QTPENDENTE, 0) - NVL(PCEST.QTBLOQUEADA, 0) QTDisponivel                      
+     , NVL(PCEST.QTESTGER, 0) -  NVL(PCEST.QTRESERV,   0)  - NVL(PCEST.QTPENDENTE, 0) - NVL(PCEST.QTBLOQUEADA, 0) QTDisponivel   
+
+
+     ,case when PCEST.QTGIRODIA > 0 AND 
+       round((DECODE(NVL(PCEST.QTGIRODIA, 0), 0, 0,                                                                
+       ((PKG_ESTOQUE.ESTOQUE_DISPONIVEL(PCEST.CODPROD, PCEST.CODFILIAL, 'C') 
+         - (DECODE(PCFILIAL.CONSIDERAESTPENDSUGCOMPRA, 'N', 0, NVL(PCEST.QTPENDENTE,0)))  ) 
+         / DECODE(NVL(PCEST.QTGIRODIA,0),0,1,PCEST.QTGIRODIA)))),2) < 1000 then
+         
+         round((DECODE(NVL(PCEST.QTGIRODIA, 0), 0, 0,                                                                
+       ((PKG_ESTOQUE.ESTOQUE_DISPONIVEL(PCEST.CODPROD, PCEST.CODFILIAL, 'C') 
+         - (DECODE(PCFILIAL.CONSIDERAESTPENDSUGCOMPRA, 'N', 0, NVL(PCEST.QTPENDENTE,0)))  ) 
+         / DECODE(NVL(PCEST.QTGIRODIA,0),0,1,PCEST.QTGIRODIA)))),2)  
+           else 0 end ESTDIAS  
+               
 
 /*
      , NVL(PCEST.QTDEVOLMES,  0) QTDEVOLMES                          
@@ -86,76 +108,21 @@ PCPRODUT.CODFORNEC
      , NVL(PCEST.QTPEDIDA, 0) QTPEDIDA                             
      
      
-     , (DECODE(NVL(PCEST.QTGIRODIA, 0), 0, 0,                                                                
-       ((PKG_ESTOQUE.ESTOQUE_DISPONIVEL(PCEST.CODPROD, PCEST.CODFILIAL, 'C') 
-         - (DECODE(PCFILIAL.CONSIDERAESTPENDSUGCOMPRA, 'N', 0, NVL(PCEST.QTPENDENTE,0)))  ) 
-         / DECODE(NVL(PCEST.QTGIRODIA,0),0,1,PCEST.QTGIRODIA)))) AS ESTDIAS 
 
-     , (PKG_ESTOQUE.ESTOQUE_DISPONIVEL(PCEST.CODPROD, PCEST.CODFILIAL, 'C') / DECODE(NVL(PCEST.QTGIRODIA,0),0,1,
+
+   /*  , (PKG_ESTOQUE.ESTOQUE_DISPONIVEL(PCEST.CODPROD, PCEST.CODFILIAL, 'C') / DECODE(NVL(PCEST.QTGIRODIA,0),0,1,
 PCEST.QTGIRODIA)) QTESTOQUEDIAS 
     , NVL(PCEST.QTESTGER, 0) /  DECODE(NVL(PCEST.QTGIRODIA,0),0,1,
-PCEST.QTGIRODIA) QTESTOQUEDIAS2
+PCEST.QTGIRODIA) QTESTOQUEDIAS2 
+*/
 
 /***********************************************************************************************************************************************/  
      
-     , (      ((NVL(PCEST.QTGIRODIA,0) * ( DECODE(NVL(PCFORNECFILIAL.PRAZOENTREGA, 0), 0, NVL(PCFORNEC.PRAZOENTREGA,0), 
-PCFORNECFILIAL.PRAZOENTREGA) + DECODE(NVL(PCPRODFILIAL.ESTOQUEIDEAL,0),0,NVL(PCPRODUT.TEMREPOS,0),NVL(PCPRODFILIAL.ESTOQUEIDEAL,
-0)) )) * (:QTVEZES))  -                                                                                                    
-                (PKG_ESTOQUE.ESTOQUE_DISPONIVEL(PCEST.CODPROD, PCEST.CODFILIAL, 'C') + NVL(PCEST.QTPEDIDA,0) - 
-(DECODE(NVL(PCFILIAL.CONSIDERAESTPENDSUGCOMPRA, 'N'), 'N', 0, NVL(PCEST.QTPENDENTE,0))) ))                                  AS SUGCOMPRA                                                             
-     
-     , (      (( ((NVL(PCEST.QTVENDMES,0) / :DIASUTEIS)) * ( DECODE(NVL(PCFORNECFILIAL.PRAZOENTREGA, 0), 0, 
-NVL(PCFORNEC.PRAZOENTREGA,0), PCFORNECFILIAL.PRAZOENTREGA) + DECODE(NVL(PCPRODFILIAL.ESTOQUEIDEAL,0),0,NVL(PCPRODUT.TEMREPOS,0),
-NVL(PCPRODFILIAL.ESTOQUEIDEAL,0)) )) * (:QTVEZES))  -                                                                                            
-                (PKG_ESTOQUE.ESTOQUE_DISPONIVEL(PCEST.CODPROD, PCEST.CODFILIAL, 'C') + NVL(PCEST.QTPEDIDA,0) - 
-(DECODE(NVL(PCFILIAL.CONSIDERAESTPENDSUGCOMPRA, 'N'), 'N', 0, NVL(PCEST.QTPENDENTE,0))) ))                                  AS SUGESTAOCOMPRASMESATUAL
-
-
-
-     , CASE WHEN ((((      ((NVL(PCEST.QTGIRODIA,0) * ( DECODE(NVL(PCFORNECFILIAL.PRAZOENTREGA, 0), 0, 
-NVL(PCFORNEC.PRAZOENTREGA,0), PCFORNECFILIAL.PRAZOENTREGA) + DECODE(NVL(PCPRODFILIAL.ESTOQUEIDEAL,0),0,NVL(PCPRODUT.TEMREPOS,0),
-NVL(PCPRODFILIAL.ESTOQUEIDEAL,0)) )) * (:QTVEZES))  -                                                                                       
-                (PKG_ESTOQUE.ESTOQUE_DISPONIVEL(PCEST.CODPROD, PCEST.CODFILIAL, 'C') + NVL(PCEST.QTPEDIDA,0) - 
-(DECODE(NVL(PCFILIAL.CONSIDERAESTPENDSUGCOMPRA, 'N'), 'N', 0, NVL(PCEST.QTPENDENTE,0))) ))                                 ) *                                                                       
-                NVL(PCEST.CUSTOFIN, 0))) < 0                                                                                                     
-       THEN ((((      ((NVL(PCEST.QTGIRODIA,0) * ( DECODE(NVL(PCFORNECFILIAL.PRAZOENTREGA, 0), 0, NVL(PCFORNEC.PRAZOENTREGA,0), 
-PCFORNECFILIAL.PRAZOENTREGA) + DECODE(NVL(PCPRODFILIAL.ESTOQUEIDEAL,0),0,NVL(PCPRODUT.TEMREPOS,0),NVL(PCPRODFILIAL.ESTOQUEIDEAL,
-0)) )) * (:QTVEZES))  -                                                                                            
-                (PKG_ESTOQUE.ESTOQUE_DISPONIVEL(PCEST.CODPROD, PCEST.CODFILIAL, 'C') + NVL(PCEST.QTPEDIDA,0) - 
-(DECODE(NVL(PCFILIAL.CONSIDERAESTPENDSUGCOMPRA, 'N'), 'N', 0, NVL(PCEST.QTPENDENTE,0))) ))                                 ) *                                                                       
-                NVL(PCEST.CUSTOFIN, 0))*(-1))                                                                                                    
-        ELSE 0                                                                                                                           
-        END AS  VLESTEXCESSO  
-
-
-     , CASE WHEN ((((      ((NVL(PCEST.QTGIRODIA,0) * ( DECODE(NVL(PCFORNECFILIAL.PRAZOENTREGA, 0), 0, 
-NVL(PCFORNEC.PRAZOENTREGA,0), PCFORNECFILIAL.PRAZOENTREGA) + DECODE(NVL(PCPRODFILIAL.ESTOQUEIDEAL,0),0,NVL(PCPRODUT.TEMREPOS,0),
-NVL(PCPRODFILIAL.ESTOQUEIDEAL,0)) )) * (:QTVEZES))  -                                                                                       
-                (PKG_ESTOQUE.ESTOQUE_DISPONIVEL(PCEST.CODPROD, PCEST.CODFILIAL, 'C') + NVL(PCEST.QTPEDIDA,0) - 
-(DECODE(NVL(PCFILIAL.CONSIDERAESTPENDSUGCOMPRA, 'N'), 'N', 0, NVL(PCEST.QTPENDENTE,0))) ))                                 ) *                                                                       
-                NVL(PCEST.CUSTOFIN, 0))) > 0                                                                                                     
-       THEN ((((      ((NVL(PCEST.QTGIRODIA,0) * ( DECODE(NVL(PCFORNECFILIAL.PRAZOENTREGA, 0), 0, NVL(PCFORNEC.PRAZOENTREGA,0), 
-PCFORNECFILIAL.PRAZOENTREGA) + DECODE(NVL(PCPRODFILIAL.ESTOQUEIDEAL,0),0,NVL(PCPRODUT.TEMREPOS,0),NVL(PCPRODFILIAL.ESTOQUEIDEAL,
-0)) )) * (:QTVEZES))  -                                                                                            
-                (PKG_ESTOQUE.ESTOQUE_DISPONIVEL(PCEST.CODPROD, PCEST.CODFILIAL, 'C') + NVL(PCEST.QTPEDIDA,0) - 
-(DECODE(NVL(PCFILIAL.CONSIDERAESTPENDSUGCOMPRA, 'N'), 'N', 0, NVL(PCEST.QTPENDENTE,0))) ))                                 ) *                                                                       
-                NVL(PCEST.CUSTOFIN, 0)))                                                                                                         
-        ELSE 0                                                                                                                           
-        END AS VLESTFALTA 
-
-
-     , ((      ((NVL(PCEST.QTGIRODIA,0) * ( DECODE(NVL(PCFORNECFILIAL.PRAZOENTREGA, 0), 0, NVL(PCFORNEC.PRAZOENTREGA,0), 
-PCFORNECFILIAL.PRAZOENTREGA) + DECODE(NVL(PCPRODFILIAL.ESTOQUEIDEAL,0),0,NVL(PCPRODUT.TEMREPOS,0),NVL(PCPRODFILIAL.ESTOQUEIDEAL,
-0)) )) * (:QTVEZES))  -                                                                                                    
-                 (PKG_ESTOQUE.ESTOQUE_DISPONIVEL(PCEST.CODPROD, PCEST.CODFILIAL, 'C') + NVL(PCEST.QTPEDIDA,0) - 
-(DECODE(NVL(PCFILIAL.CONSIDERAESTPENDSUGCOMPRA, 'N'), 'N', 0, NVL(PCEST.QTPENDENTE,0))) ))                                  / 
-UNIDADE.QTUNITCX) AS SUGCOMPRACX 
-
    
 
      , NVL(PCPRODUT.PERCST, 0) PERCST      
      , NVL(PCEST.VLVENDMES, 0) VLVENDAMES                                       
-     , (PCEST.VLVENDMES /                                                      
+     , round((PCEST.VLVENDMES /                                                      
         (DECODE(NVL ((SELECT SUM(E.VLVENDMES)                                     
                         FROM PCEST E, PCPRODUT P                                      
                        WHERE E.CODPROD = P.CODPROD                                    
@@ -165,7 +132,7 @@ UNIDADE.QTUNITCX) AS SUGCOMPRACX
                         FROM PCEST E, PCPRODUT P                                      
                        WHERE E.CODPROD = P.CODPROD                                    
                          AND P.CODFORNEC = PCPRODUT.CODFORNEC                         
-                         AND E.CODFILIAL = PCEST.CODFILIAL), 1)))) * 100 PARTICIPITEM
+                         AND E.CODFILIAL = PCEST.CODFILIAL), 1)))) * 100,2) PARTICIPITEM
 
 
   FROM PCEST           
@@ -214,11 +181,52 @@ UNIDADE.QTUNITCX) AS SUGCOMPRACX
    AND ((PCPRODFILIAL.PROIBIDAVENDA NOT IN ('S')) OR (PCPRODFILIAL.PROIBIDAVENDA IS NULL))) 
    AND PCTABPR.CODST         = PCTRIBUT.CODST   
    AND PCEST.CODFILIAL IN ('2')     
-   AND PCREGIAO.NUMREGIAO = :NUMREGIAO  
+   --AND PCREGIAO.NUMREGIAO = :NUMREGIAO  
    AND (PCPRODUT.CODFILIAL IN ('2')  OR (PCPRODUT.CODFILIAL IS NULL) OR (PCPRODUT.CODFILIAL = '99'))
    AND ((PCFORNEC.BLOQUEIO NOT IN ('S')) OR (PCFORNEC.BLOQUEIO IS NULL))  
    AND (((PCPRODUT.OBS2 NOT IN ('FL')) OR (PCPRODUT.OBS2 IS NULL)) AND ((PCPRODFILIAL.FORALINHA NOT IN ('S')) OR 
 (PCPRODFILIAL.FORALINHA IS NULL))) 
+
+
+AND PCPRODUT.CODFORNEC in (
+2901 ,3175 ,297 ,1214 ,3114 ,2620 ,989 ,2589 ,2280 ,3026
+,3235 ,3309 ,3383 ,3639 ,3640 ,3582 ,3715 ,3726 ,3718 ,1174
+,390 ,3470 ,405 ,394 ,3468 ,976 ,1118 ,4 ,1360 ,3446 ,1203 ,403 ,2971 ,975 ,346 ,2993 ,3248
+,3258 ,3330 ,3356
+,3420 ,3424
+,3333 ,3461
+,3314 ,3423
+,3485 ,3486
+,3492 ,3549
+,3570 ,3209
+,3361 ,3642
+,19 ,3356
+,3743 ,3592
+,14 ,2946
+,125 ,1662
+,1970 ,2591
+,3459 ,3018
+,2841 ,2789
+,3222 ,3241
+,3326 ,3313
+,1068 ,3466
+,3542 ,3396
+,3077 ,3074
+,2902 ,2746
+,2908 ,3207
+,1721 ,2811
+,3317 ,3329
+,2834 ,3334
+,3345 ,3373
+,3427 ,2824
+,3457 ,3441
+,3589 ,3546
+,3552 ,3632
+,3634 ,3469
+,3606 ,3675 ,3623
+
+)
+
    ORDER BY 
-         PCPRODUT.CODPROD,
-       PCEST.CODFILIAL
+         PCPRODUT.CODPROD
+
