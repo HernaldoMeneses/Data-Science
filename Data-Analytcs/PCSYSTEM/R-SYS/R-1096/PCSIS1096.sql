@@ -321,6 +321,7 @@ and    ROUND(M.QTCONT * (M.PUNITCONT - NVL(M.ST,0) - NVL(M.VLIPI,0)),2) > 0
 and    M.QTCONT > 0
 and    M.DTCANCEL is null
 and    M.STATUS in ('A', 'AB')
+-- UNION ALL 1 END
 -------------------------------------------------------------
 UNION ALL
 -------------------------------------------------------------
