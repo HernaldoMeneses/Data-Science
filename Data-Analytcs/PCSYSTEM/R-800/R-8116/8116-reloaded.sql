@@ -163,9 +163,9 @@ FROM --Obj1
           ORDER BY PCUSUARI.CODSUPERVISOR,VLVENDA DESC
      ) tab1, --Obj1.1__
      (SELECT --Obj1.2_init
-          'NOMEUSUARIOLOGADO'  USUARIO,
-          (SELECT fnc_dp_ret_dados_consulta((select listagg(pf.codigo, ',') WITHIN GROUP
-          (ORDER BY pf.codigo) codigo from pcfilial pf where pf.codigo in (:COD_FILIAL)), 1) FROM DUAL) FILIAL,
+          --'NOMEUSUARIOLOGADO'  USUARIO,
+         -- (SELECT fnc_dp_ret_dados_consulta((select listagg(pf.codigo, ',') WITHIN GROUP
+         -- (ORDER BY pf.codigo) codigo from pcfilial pf where pf.codigo in (:COD_FILIAL)), 1) FROM DUAL) FILIAL,
           to_date(:DTINICIO,'dd-mm-rrrr') data_ini,
           to_date(:DTFIM,'dd-mm-rrrr') data_fin,
           tab.rca cod_rca,
@@ -182,6 +182,8 @@ FROM --Obj1
           case when (sum(tab.venda))<= 0 then 0 
             else round((((sum(tab.venda)-sum(tab.dev))-sum(custofin))/(sum(tab.venda))*100),2)
                 end  per_lucro
+
+
           from (select p.CODUSUR rca, 
                     p.CODSUPERVISOR sup, 
                     sum(p.PVENDA) venda, 
@@ -190,6 +192,8 @@ FROM --Obj1
                     --(sum(p.vlcustofin)-(sum((select sum(pi.qt*nvl(pi.vlverbacmv,0))+sum(pi.qt*nvl(pi.vlrebaixacmv,0))+sum(pi.qt*nvl(pi.vlverbacmvcli,0)) from pcpedi pi where pi.numped=p.numped)))) custofin , 
                     0 venda_afat
                     from vw_vendaspedido_8022 p
+
+                    
                
                               where  TO_DATE(p.DATA, 'DD-MM-RRRR') between to_date(:DTINICIO,'dd-mm-rrrr') and to_date(:DTFIM,'dd-mm-rrrr')
                               --and p.DTCANCEL is null

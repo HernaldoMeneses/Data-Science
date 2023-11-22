@@ -1,0 +1,1 @@
+-- follow https://docs.oracle.com/en/database/oracle/oracle-database/19/sqlrf/Changes-in-This-Release-for-Oracle-Database-SQL-Language-Reference.html#GUID-3C11D3A9-8B14-4DCC-B212-B7FE57EE81E8
