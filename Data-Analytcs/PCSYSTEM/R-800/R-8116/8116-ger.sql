@@ -10,11 +10,48 @@
 --# - Criação : 09/10/2023
 --# - Infrastrutura de compilação e informações ao final do Script.
 --#--------------------------------------------------------------------Thanks.
+select
+
+     ger.DTINICIO,
+     ger.DTFIM,
+     ger.codgerente,
+     ger.codsupervisor, ger.nomesup,
+     --ger.codusur, 
+     --tabelao.nome,
+      
+     sum(ger.vlmetatotal) as vlmetatotal, 
+     sum(ger.vlvenda) as vlvenda,
+     round(sum(ger.vlvenda)/sum(ger.vlmetatotal)*100,4) as perc_meta_fin,
+     
+     sum(ger.clqtcliativ) as clqtcliativ,
+     sum(ger.Positivacao) as Positivacao,
+     round(sum(ger.Positivacao)/sum(ger.clqtcliativ)*100,4) as Perc_Positva,
+     
+     --ger.PERC_COB_FORN_FIN,
+     --ger.PERC_COB_FORN_POS,
+     
+     sum(ger.META_LUCRO) as META_LUCRO,
+     --ger.PERC_LUCRO,
+     sum(ger.lucro) as LUCRO,
+      round(sum(ger.lucro)/sum(ger.META_LUCRO)*100,4) as PERC_COB_LUCRO,
+     
+     sum(ger.LIQUIDEZ) as LIQUIDEZ,
+     
+--     tabelao.per_lucro,
+--     tabelao.venda,
+
+     sum(ger.Devol) as Devol,
+     --sum(ger.Perc_Devol) as Perc_Devol
+     round(sum(ger.Devol)/sum(ger.vlvenda)*100,4) as Perc_Devol
+      --tabelao.PERC_INAD
+from (
 select 
      tabelao.DTINICIO,
      tabelao.DTFIM,
+     tabelao.codgerente,
      tabelao.codsupervisor, tabelao.nomesup,
-     tabelao.codusur, tabelao.nome,
+     tabelao.codusur, 
+     --tabelao.nome,
       
      tabelao.vlmetatotal, 
      tabelao.vlvenda,
@@ -27,7 +64,7 @@ select
      tabelao.PERC_COB_FORN_FIN,
      tabelao.PERC_COB_FORN_POS,
      
-     tabelao.META_LUCRO,
+     tabelao.META_LUCRO/100*tabelao.vlvenda as META_LUCRO,
      tabelao.PERC_LUCRO,
      tabelao.lucro as LUCRO,
      tabelao.PERC_COB_LUCRO,
@@ -38,51 +75,54 @@ select
 --     tabelao.venda,
 
      COALESCE(tab4.VLTOTAL,0) as Devol,
-     case when tabelao.vlvenda > 0 then COALESCE(tab4.VLTOTAL,0)/tabelao.vlvenda*100 else 0 end Perc_Devol,
+     COALESCE(tab4.VLTOTAL,0)/tabelao.vlvenda*100 as Perc_Devol,
       tabelao.PERC_INAD
 from (
 SELECT --Obj1_init
      to_date(:DTINICIO,'dd-mm-rrrr') As DTINICIO,
      to_date(:DTFIM,'dd-mm-rrrr') AS DTFIM,
+     TAB1.codgerente,
      TAB1.codsupervisor, TAB1.nomesup,
-     TAB1.codusur, TAB1.nome, 
+     TAB1.codusur, 
+     --TAB1.nome, 
      TAB1.vlmetatotal, TAB1.vlvenda,
      CASE when tab1.vlmetatotal>0 
           then round(((tab1.vlvenda/tab1.vlmetatotal)*100),2) 
           else 0 end perc_meta_fin,
      
-     TAB1.vlvenda * (fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.CODUSUR, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 8))/100  as Lucro,
-     fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.CODUSUR, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 4) PERC_COB_FORN_FIN,
-     fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.CODUSUR, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 5) PERC_COB_FORN_POS,
-     fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.CODUSUR, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 7) META_LUCRO,
-     fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.CODUSUR, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 8) PERC_LUCRO,
-     fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.CODUSUR, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 6) PERC_COB_LUCRO,
-     fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.CODUSUR, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 1) LIQUIDEZ,
+     TAB1.vlvenda * (fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.codusur, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 8))/100  as Lucro,
+     fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.codusur, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 4) PERC_COB_FORN_FIN,
+     fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.codusur, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 5) PERC_COB_FORN_POS,
+     fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.codusur, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 7) META_LUCRO,
+     fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.codusur, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 8) PERC_LUCRO,
+     fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.codusur, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 6) PERC_COB_LUCRO,
+     fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.codusur, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 1) LIQUIDEZ,
      tab2.per_lucro,
      tab2.venda,
      tab2.dev,
      tab2.cmv,
-     fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.CODUSUR, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 3) PERC_INAD,
+     fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.codusur, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 3) PERC_INAD,
      tab3.clqtcliativ,
      tab3.qtcli as Positivacao,
-     case when tab3.clqtcliativ > 0 then tab3.qtcli/tab3.clqtcliativ*100 else 0 end Perc_Positva
+     tab3.qtcli/tab3.clqtcliativ*100 as Perc_Positva
      --COALESCE(tab4.VLTOTAL,0) as Devol
      --tab4.VLTOTAL/TAB1.vlvenda*100 as Perc_Devol                 
 FROM --Obj1       
      (SELECT --Obj1.1_init
+     pcsuperv.codgerente,
           pcusuari.codsupervisor,
           pcsuperv.nome AS nomesup,
           pcusuari.codusur, 
-          pcusuari.nome, 
-          nvl(pcusuari.comissaofixa,0) FIXO, 
-          NVL ((SELECT SUM (pcmetarca.vlvendaprev)
+          --pcusuari.nome, 
+          sum(nvl(pcusuari.comissaofixa,0)) FIXO, 
+          sum(NVL ((SELECT SUM (pcmetarca.vlvendaprev)
                FROM pcmetarca
               WHERE pcmetarca.codusur = pcusuari.codusur
                 AND pcmetarca.codfilial IN (:COD_FILIAL)
                 AND pcmetarca.DATA BETWEEN TRUNC(to_date(:DTINICIO,'dd-mm-rrrr'),'mm') AND LAST_DAY(to_date(:DTFIM,'dd-mm-rrrr'))),
             0
-           ) AS vlmetatotal,
-          NVL (vendas.vlvenda, 0) vlvenda
+           )) AS vlmetatotal,
+          sum(NVL (vendas.vlvenda, 0)) vlvenda
           FROM --Obj1.1 
                pcusuari, 
                pcsuperv, 
@@ -158,21 +198,31 @@ FROM --Obj1
           AND pcusuari.codusur = inandimp.codusur(+)
           AND pcusuari.codusur = mix.codusur(+)
           --AND pcusuari.codusur in (:COD_RCA)
-          AND PCUSUARI.CODSUPERVISOR in (:Cod_Super)
+          --AND PCUSUARI.CODSUPERVISOR in (:Cod_Super)
+          and pcsuperv.codgerente in (:Cod_Ger) 
           AND NVL(VLVENDA, 0) <> 0 
-          ORDER BY PCUSUARI.CODSUPERVISOR,VLVENDA DESC
+
+          group by 
+               pcsuperv.codgerente,
+          pcusuari.codsupervisor,
+          pcsuperv.nome,
+          pcusuari.codusur
+          ORDER BY 
+          VLVENDA DESC
      ) tab1, --Obj1.1__
      (SELECT --Obj1.2_init
-          'NOMEUSUARIOLOGADO'  USUARIO,
-          (SELECT fnc_dp_ret_dados_consulta((select listagg(pf.codigo, ',') WITHIN GROUP
-          (ORDER BY pf.codigo) codigo from pcfilial pf where pf.codigo in (:COD_FILIAL)), 1) FROM DUAL) FILIAL,
-          to_date(:DTINICIO,'dd-mm-rrrr') data_ini,
-          to_date(:DTFIM,'dd-mm-rrrr') data_fin,
-          tab.rca cod_rca,
-          (select v.nome from pcusuari v where v.codusur=tab.rca) nome_rca,     
-          (select v.comissaoservicoprestado from pcusuari v where v.codusur=tab.rca) margem_padrao,  
+          --'NOMEUSUARIOLOGADO'  USUARIO,
+         -- (SELECT fnc_dp_ret_dados_consulta((select listagg(pf.codigo, ',') WITHIN GROUP
+         -- (ORDER BY pf.codigo) codigo from pcfilial pf where pf.codigo in (:COD_FILIAL)), 1) FROM DUAL) FILIAL,
+          --to_date(:DTINICIO,'dd-mm-rrrr') data_ini,
+          --to_date(:DTFIM,'dd-mm-rrrr') data_fin,
+          tab.codgerente,
+          
+          --(select v.nome from pcusuari v where v.codusur=tab.rca) nome_rca,     
+          --(select v.comissaoservicoprestado from pcusuari v where v.codusur=tab.rca) margem_padrao,  
           tab.sup cod_sup,
-          (select s.nome from pcsuperv s where s.codsupervisor=tab.sup) nome_sup,
+          --(select s.nome from pcsuperv s where s.codsupervisor=tab.sup) nome_sup,
+          tab.CODUSUR cod_rca,
           round(sum(tab.venda),2) venda,
           round(sum(tab.venda_afat),2) venda_afat,
           round(sum(tab.dev),2) dev,
@@ -182,31 +232,46 @@ FROM --Obj1
           case when (sum(tab.venda))<= 0 then 0 
             else round((((sum(tab.venda)-sum(tab.dev))-sum(custofin))/(sum(tab.venda))*100),2)
                 end  per_lucro
-          from (select p.CODUSUR rca, 
-                    p.CODSUPERVISOR sup, 
+
+
+          from (select 
+          p.codgerente,
+                    p.CODSUPERVISOR sup,
+                    p.CODUSUR, 
                     sum(p.PVENDA) venda, 
                     0 dev ,
                     SUM(P.VLCUSTOFIN) custofin ,
                     --(sum(p.vlcustofin)-(sum((select sum(pi.qt*nvl(pi.vlverbacmv,0))+sum(pi.qt*nvl(pi.vlrebaixacmv,0))+sum(pi.qt*nvl(pi.vlverbacmvcli,0)) from pcpedi pi where pi.numped=p.numped)))) custofin , 
                     0 venda_afat
                     from vw_vendaspedido_8022 p
+
+                    
                
                               where  TO_DATE(p.DATA, 'DD-MM-RRRR') between to_date(:DTINICIO,'dd-mm-rrrr') and to_date(:DTFIM,'dd-mm-rrrr')
                               --and p.DTCANCEL is null
                               and p.CODFILIAL=:COD_FILIAL
                               --and p.CODUSUR in (:COD_RCA)
-                              and p.CODSUPERVISOR in (:Cod_Super)  
+                              --and p.CODSUPERVISOR in (:Cod_Super)
+                              and p.codgerente in (:Cod_Ger)   
                               --AND P.CONDVENDA IN (1)                        
-                         group by p.CODUSUR, p.CODSUPERVISOR    
+                         group by 
+                         p.codgerente,
+                    p.CODSUPERVISOR,
+                    p.CODUSUR    
 
                     ) tab
-                    group by tab.rca, tab.sup    
+                    group by
+                   tab.codgerente,
+                tab.sup,
+                tab.CODUSUR    
                     order by sup,per_lucro desc    
    ) tab2, --Obj1.2__
    (SELECT --Obj1.3_init
-          pcusuari.codusur, 
+          pcsuperv.codgerente,
+          
           pcusuari.codsupervisor,
-          ((SELECT --Obj1.3.1_init
+          pcusuari.codusur,
+          sum(((SELECT --Obj1.3.1_init
                COUNT(DISTINCT(PCCLIENT.CODCLI)) 
                FROM pcclient 
                WHERE pcclient.codusur1 = pcusuari.codusur)
@@ -220,8 +285,8 @@ FROM --Obj1
                AND pcusurcli.codcli = pcclient.codcli
                AND PCUSURCLI.CODUSUR <> NVL(PCCLIENT.CODUSUR1, 0)
                AND PCUSURCLI.CODUSUR <> NVL(PCCLIENT.CODUSUR2, 0))
-          ) clqtclicad,
-          ( SELECT 
+          )) clqtclicad,
+          sum(( SELECT 
                COUNT(DISTINCT(PCCLIENT.CODCLI)) QTCLIATIVOS FROM PCCLIENT
                WHERE ( (PCCLIENT.CODUSUR1 = PCUSUARI.CODUSUR)  OR ( (PCCLIENT.CODUSUR2 = PCUSUARI.CODUSUR ) AND ( NVL(PCCLIENT.codusur1,0) <> 
                NVL(PCCLIENT.codusur2,0)) )  OR
@@ -232,14 +297,14 @@ FROM --Obj1
                    AND NVL(PCUSURCLI.CODUSUR,0) <> NVL(PCCLIENT.codusur2,0)
                     AND PCUSURCLI.CODCLI  = PCCLIENT.CODCLI))
                AND ( PCCLIENT.DTULTCOMP >= trunc(sysdate - (SELECT nvl(numdiascliinativ,0) FROM pcconsum) ) )
-          ) clqtcliativ,
-          vendas.qtcli 
+          )) clqtcliativ,
+          sum(vendas.qtcli) as qtcli 
  
           FROM 
                pcusuari, 
                pcsuperv, 
                (SELECT  
-                    PCPEDC.CODUSUR  codusur, 
+                    PCPEDC.CODUSUR  codusur,
                     SUM(ROUND(DECODE(PCPEDC.CONDVENDA,5,0,6,0,11,0,12,0,(NVL(PCPEDI.PVENDA, 0) + NVL(PCPEDI.VLOUTRASDESP, 0) + 
                     NVL(PCPEDI.VLFRETE, 0)) * NVL(PCPEDI.QT, 0)),2)) AS vlvenda,
                     COUNT(DISTINCT(PCPEDC.NUMPED)) QTNF,
@@ -261,8 +326,8 @@ FROM --Obj1
                     PCATIVI,
                     PCPRACA, PCCIDADE
                     WHERE 1=1  
-                    AND pcpedc.DATA BETWEEN to_date(:DTINICIO,'dd/mm/yyyy') AND to_date(:DTFIM,'dd/mm/yyyy') 
-                    AND pcpedI.DATA BETWEEN to_date(:DTINICIO,'dd/mm/yyyy') AND to_date(:DTFIM,'dd/mm/yyyy') 
+                    AND pcpedc.DATA BETWEEN :DTINICIO AND :DTFIM 
+                    AND pcpedI.DATA BETWEEN :DTINICIO AND :DTFIM 
                     AND pcpedc.codfilial IN ('2')
                     AND PCPEDI.NUMPED = PCPEDC.NUMPED
                     AND PCCLIENT.CODCIDADE = PCCIDADE.CODCIDADE(+)
@@ -279,8 +344,8 @@ FROM --Obj1
                     AND PCPEDC.CONDVENDA IN (1, 2, 3, 7, 9, 14, 15, 17, 18, 19, 98)
                     AND pcpedc.dtcancel IS NULL
                     AND pcpedc.vlatend > 0 
-                    AND  PCPEDC.CODSUPERVISOR  = :Cod_Super
-                    AND pcusuari.codsupervisor = :Cod_Super
+                    AND  PCPEDC.CODSUPERVISOR  in (select p.codsupervisor from pcsuperv p where p.codgerente in (:Cod_Ger))
+                    AND pcusuari.codsupervisor in (select p.codsupervisor from pcsuperv p where p.codgerente in (:Cod_Ger))
                     GROUP BY  PCPEDC.CODUSUR  ) vendas,
                (SELECT   
                     pcprest.codusur, (SUM(PCPREST.VALOR) ) valor,
@@ -289,7 +354,7 @@ FROM --Obj1
                     WHERE pcprest.dtpag IS NULL
                     AND pcprest.codusur = pcusuari.codusur
                     AND pcprest.codfilial IN ('2')
-                    AND pcusuari.codsupervisor = :Cod_Super
+                    AND pcusuari.codsupervisor in (select p.codsupervisor from pcsuperv p where p.codgerente in (:Cod_Ger))
                     GROUP BY pcprest.codusur) financ,
                (SELECT 
                     pcprest.codusur, SUM(VALOR) vpago
@@ -299,7 +364,7 @@ FROM --Obj1
                     and PCUSUARI.CODSUPERVISOR = PCSUPERV.CODSUPERVISOR
                     and PCPREST.CODCOB = PCCOB.CODCOB
                     and PCPREST.CODCOB not in ('DEVP', 'DEVT', 'BNF', 'BNFT', 'BNFR', 'BNTR', 'BNRP', 'CRED')
-                    and PCUSUARI.CODSUPERVISOR = :Cod_Super
+                    and PCUSUARI.CODSUPERVISOR in (select p.codsupervisor from pcsuperv p where p.codgerente in (:Cod_Ger))
                     and PCPREST.DTPAG is NULL
                     and (PCPREST.DTVENC + NVL(PCCOB.DIASCARENCIA,0)) <= (TRUNC(SYSDATE) - 1)
                     and (Pcprest.CODFILIAL IN ('2'))
@@ -309,29 +374,36 @@ FROM --Obj1
                     WHERE PCPEDI.NUMPED = PCPEDC.NUMPED
                     AND NVL(PCPEDI.BONIFIC, 'N') =  'N' 
                     AND  PCPEDC.CODUSUR  = PCUSUARI.CODUSUR
-                    AND PCPEDC.DATA BETWEEN to_date(:DTINICIO,'dd/mm/yyyy') AND to_date(:DTFIM,'dd/mm/yyyy') 
+                    AND PCPEDC.DATA BETWEEN :DTINICIO AND :DTFIM 
                     AND PCPEDC.CONDVENDA IN (1, 2, 3, 7, 9, 14, 15, 17, 18, 19, 98)
                     AND PCPEDC.DTCANCEL IS NULL
                     AND pcpedc.vlatend > 0 
                     AND PCUSUARI.CODSUPERVISOR = PCSUPERV.CODSUPERVISOR
                     AND PCPEDC.CODFILIAL IN ('2')
-                    AND  PCPEDC.CODSUPERVISOR = :Cod_Super
+                    AND  PCPEDC.CODSUPERVISOR in (select p.codsupervisor from pcsuperv p where p.codgerente in (:Cod_Ger))
                     GROUP BY  PCPEDC.CODUSUR  ) MIX
                     WHERE pcusuari.codsupervisor = pcsuperv.codsupervisor
                     AND pcusuari.codusur = vendas.codusur(+)
                     AND pcusuari.codusur = financ.codusur(+)
                     AND pcusuari.codusur = inandimp.codusur(+)
                     AND pcusuari.codusur = mix.codusur(+)
-                    AND PCUSUARI.CODSUPERVISOR = :Cod_Super
+                    AND PCUSUARI.CODSUPERVISOR in (select p.codsupervisor from pcsuperv p where p.codgerente in (:Cod_Ger))
                     AND NVL(VLVENDA, 0) <> 0 
-                    ORDER BY PCUSUARI.CODSUPERVISOR,VLVENDA DESC
+
+                    Group by
+                         pcsuperv.codgerente, 
+                         pcusuari.codsupervisor,
+                         pcusuari.codusur
+                    ORDER BY PCUSUARI.CODSUPERVISOR
      ) tab3 
-     
+
      WHERE TAB1.codusur = tab2.cod_rca
 AND tab2.cod_rca = tab3.codusur
+
      ) tabelao
       --Obj1.3__
     LEFT JOIN (SELECT --Obj1.4_init
+pcsuperv.codgerente,
   PCUSUARI.CODSUPERVISOR,
   PCUSUARI.CODusur,
   DECODE(SUM(PCNFENT.VLTOTAL),0,SUM(PCESTCOM.VLDEVOLUCAO),SUM(PCNFENT.VLTOTAL)) AS VLTOTAL
@@ -345,7 +417,7 @@ AND tab2.cod_rca = tab3.codusur
    AND   ( PCNFENT.CODMOTORISTADEVOL = PCEMPR.MATRICULA(+))
    AND   (  PCNFENT.CODUSURDEVOL  = PCUSUARI.CODUSUR )
    AND   ( PCUSUARI.CODSUPERVISOR    = PCSUPERV.CODSUPERVISOR(+))
-   AND   ( PCNFENT.DTENT BETWEEN  to_date(:DTINICIO,'dd/mm/yyyy') AND to_date(:DTFIM,'dd/mm/yyyy')  )
+   AND   ( PCNFENT.DTENT BETWEEN  :DTINICIO AND :DTFIM  )
    AND   ( PCNFENT.TIPODESCARGA IN ('6','7','T') ) 
    AND   ( NVL(PCNFENT.OBS, 'X') <> 'NF CANCELADA')
    AND   ( PCNFENT.CODFISCAL IN ('131','132','231','232','199','299') )
@@ -404,16 +476,23 @@ AND tab2.cod_rca = tab3.codusur
                                                                                                                      AND PCESTCOM.NUMTRANSVENDA = PCNFSAID.NUMTRANSVENDA(+) 
                                                                                                                      AND NVl(PCNFSAID.CONDVENDA,0) NOT IN (4, 8, 10, 13, 20, 98, 99)
                                                                                                                      AND PCESTCOM.NUMTRANSVENDA = PCNFSAID.NUMTRANSVENDA(+) 
+                                                                                            
 GROUP BY     
+ pcsuperv.codgerente,
   PCUSUARI.CODSUPERVISOR,
   PCUSUARI.CODusur
   --PCNFENT.VLTOTAL,
   --PCESTCOM.VLDEVOLUCAO                     
-ORDER BY    
-  PCUSUARI.CODSUPERVISOR,
-  PCUSUARI.CODusur
+ORDER BY  
+pcsuperv.codgerente,  
+  PCUSUARI.CODSUPERVISOR
      ) tab4 on tabelao.codusur = tab4.codusur
-
+     ) ger
+group by
+     ger.DTINICIO,
+     ger.DTFIM,
+     ger.codgerente,
+     ger.codsupervisor, ger.nomesup
 --AND tab2.cod_rca = tab4.codusur
 
 
@@ -428,6 +507,5 @@ ORDER BY
 --# - Obs: no bugs.
 --# - Obs: 09/10/2023.
 --#
---# - Created by : Hernaldo Meneses (Matrix_total)
 --# - Hello... please if you find something wrong,  contact-me.
 --#--------------------------------------------------------------------Follow the white rabbit.

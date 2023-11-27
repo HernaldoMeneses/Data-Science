@@ -38,7 +38,7 @@ select
 --     tabelao.venda,
 
      COALESCE(tab4.VLTOTAL,0) as Devol,
-     case when tabelao.vlvenda > 0 then COALESCE(tab4.VLTOTAL,0)/tabelao.vlvenda*100 else 0 end Perc_Devol,
+     COALESCE(tab4.VLTOTAL,0)/tabelao.vlvenda*100 as Perc_Devol,
       tabelao.PERC_INAD
 from (
 SELECT --Obj1_init
@@ -65,7 +65,7 @@ SELECT --Obj1_init
      fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.CODUSUR, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 3) PERC_INAD,
      tab3.clqtcliativ,
      tab3.qtcli as Positivacao,
-     case when tab3.clqtcliativ > 0 then tab3.qtcli/tab3.clqtcliativ*100 else 0 end Perc_Positva
+     tab3.qtcli/tab3.clqtcliativ*100 as Perc_Positva
      --COALESCE(tab4.VLTOTAL,0) as Devol
      --tab4.VLTOTAL/TAB1.vlvenda*100 as Perc_Devol                 
 FROM --Obj1       
@@ -428,6 +428,5 @@ ORDER BY
 --# - Obs: no bugs.
 --# - Obs: 09/10/2023.
 --#
---# - Created by : Hernaldo Meneses (Matrix_total)
 --# - Hello... please if you find something wrong,  contact-me.
 --#--------------------------------------------------------------------Follow the white rabbit.

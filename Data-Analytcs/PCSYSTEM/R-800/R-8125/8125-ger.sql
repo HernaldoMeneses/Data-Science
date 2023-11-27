@@ -15,14 +15,24 @@ select
      tabelao.DTFIM,
      tabelao.codsupervisor, tabelao.nomesup,
      tabelao.codusur, tabelao.nome,
-      
-     tabelao.vlmetatotal, 
-     tabelao.vlvenda,
-     tabelao.perc_meta_fin,
+
+     tab5.meta_fim as vlmetatotal,
+     tab5.venda as vlvenda,
+     tab5.venda/tab5.meta_fim as perc_meta_fin,
+
+     tab5.meta_pos as clqtcliativ,
+     tab5.positivacao as Positivacao,
+     tab5.meta_pos/tab5.positivacao as Perc_Positva,
      
-     tabelao.clqtcliativ,
-     tabelao.Positivacao,
-     tabelao.Perc_Positva,
+
+      
+     --tabelao.vlmetatotal,  --this
+     --tabelao.vlvenda,         --this
+     --tabelao.perc_meta_fin, --this
+     
+    -- tabelao.clqtcliativ, --this
+     --tabelao.Positivacao, --this
+     --tabelao.Perc_Positva, --this
      
      tabelao.PERC_COB_FORN_FIN,
      tabelao.PERC_COB_FORN_POS,
@@ -38,7 +48,7 @@ select
 --     tabelao.venda,
 
      COALESCE(tab4.VLTOTAL,0) as Devol,
-     case when tabelao.vlvenda > 0 then COALESCE(tab4.VLTOTAL,0)/tabelao.vlvenda*100 else 0 end Perc_Devol,
+     COALESCE(tab4.VLTOTAL,0)/tabelao.vlvenda*100 as Perc_Devol,
       tabelao.PERC_INAD
 from (
 SELECT --Obj1_init
@@ -63,9 +73,15 @@ SELECT --Obj1_init
      tab2.dev,
      tab2.cmv,
      fnc_wn_premiacao_comissao(:COD_FILIAL, TAB1.CODUSUR, to_date(:DTINICIO,'dd-mm-rrrr'), to_date(:DTFIM,'dd-mm-rrrr'), 3) PERC_INAD,
+     
+     
+     --Turn OFF 21/11/2023
      tab3.clqtcliativ,
      tab3.qtcli as Positivacao,
-     case when tab3.clqtcliativ > 0 then tab3.qtcli/tab3.clqtcliativ*100 else 0 end Perc_Positva
+     tab3.qtcli/tab3.clqtcliativ*100 as Perc_Positva
+
+
+
      --COALESCE(tab4.VLTOTAL,0) as Devol
      --tab4.VLTOTAL/TAB1.vlvenda*100 as Perc_Devol                 
 FROM --Obj1       
@@ -157,7 +173,7 @@ FROM --Obj1
           AND pcusuari.codusur = financ.codusur(+)
           AND pcusuari.codusur = inandimp.codusur(+)
           AND pcusuari.codusur = mix.codusur(+)
-          --AND pcusuari.codusur in (:COD_RCA)
+          AND pcusuari.codusur in (:COD_RCA)
           AND PCUSUARI.CODSUPERVISOR in (:Cod_Super)
           AND NVL(VLVENDA, 0) <> 0 
           ORDER BY PCUSUARI.CODSUPERVISOR,VLVENDA DESC
@@ -194,7 +210,7 @@ FROM --Obj1
                               where  TO_DATE(p.DATA, 'DD-MM-RRRR') between to_date(:DTINICIO,'dd-mm-rrrr') and to_date(:DTFIM,'dd-mm-rrrr')
                               --and p.DTCANCEL is null
                               and p.CODFILIAL=:COD_FILIAL
-                              --and p.CODUSUR in (:COD_RCA)
+                              and p.CODUSUR in (:COD_RCA)
                               and p.CODSUPERVISOR in (:Cod_Super)  
                               --AND P.CONDVENDA IN (1)                        
                          group by p.CODUSUR, p.CODSUPERVISOR    
@@ -261,8 +277,8 @@ FROM --Obj1
                     PCATIVI,
                     PCPRACA, PCCIDADE
                     WHERE 1=1  
-                    AND pcpedc.DATA BETWEEN to_date(:DTINICIO,'dd/mm/yyyy') AND to_date(:DTFIM,'dd/mm/yyyy') 
-                    AND pcpedI.DATA BETWEEN to_date(:DTINICIO,'dd/mm/yyyy') AND to_date(:DTFIM,'dd/mm/yyyy') 
+                    AND pcpedc.DATA BETWEEN :DTINICIO AND :DTFIM 
+                    AND pcpedI.DATA BETWEEN :DTINICIO AND :DTFIM 
                     AND pcpedc.codfilial IN ('2')
                     AND PCPEDI.NUMPED = PCPEDC.NUMPED
                     AND PCCLIENT.CODCIDADE = PCCIDADE.CODCIDADE(+)
@@ -309,7 +325,7 @@ FROM --Obj1
                     WHERE PCPEDI.NUMPED = PCPEDC.NUMPED
                     AND NVL(PCPEDI.BONIFIC, 'N') =  'N' 
                     AND  PCPEDC.CODUSUR  = PCUSUARI.CODUSUR
-                    AND PCPEDC.DATA BETWEEN to_date(:DTINICIO,'dd/mm/yyyy') AND to_date(:DTFIM,'dd/mm/yyyy') 
+                    AND PCPEDC.DATA BETWEEN :DTINICIO AND :DTFIM 
                     AND PCPEDC.CONDVENDA IN (1, 2, 3, 7, 9, 14, 15, 17, 18, 19, 98)
                     AND PCPEDC.DTCANCEL IS NULL
                     AND pcpedc.vlatend > 0 
@@ -325,7 +341,7 @@ FROM --Obj1
                     AND PCUSUARI.CODSUPERVISOR = :Cod_Super
                     AND NVL(VLVENDA, 0) <> 0 
                     ORDER BY PCUSUARI.CODSUPERVISOR,VLVENDA DESC
-     ) tab3 
+     ) tab3
      
      WHERE TAB1.codusur = tab2.cod_rca
 AND tab2.cod_rca = tab3.codusur
@@ -345,7 +361,7 @@ AND tab2.cod_rca = tab3.codusur
    AND   ( PCNFENT.CODMOTORISTADEVOL = PCEMPR.MATRICULA(+))
    AND   (  PCNFENT.CODUSURDEVOL  = PCUSUARI.CODUSUR )
    AND   ( PCUSUARI.CODSUPERVISOR    = PCSUPERV.CODSUPERVISOR(+))
-   AND   ( PCNFENT.DTENT BETWEEN  to_date(:DTINICIO,'dd/mm/yyyy') AND to_date(:DTFIM,'dd/mm/yyyy')  )
+   AND   ( PCNFENT.DTENT BETWEEN  :DTINICIO AND :DTFIM  )
    AND   ( PCNFENT.TIPODESCARGA IN ('6','7','T') ) 
    AND   ( NVL(PCNFENT.OBS, 'X') <> 'NF CANCELADA')
    AND   ( PCNFENT.CODFISCAL IN ('131','132','231','232','199','299') )
@@ -414,6 +430,150 @@ ORDER BY
   PCUSUARI.CODusur
      ) tab4 on tabelao.codusur = tab4.codusur
 
+left join
+
+     (
+
+ SELECT 
+        --B.USUARIO, B.DATA_INICIAL, B.DATA_FINAL, 
+        B.cod_supervisor, B.nome_sup,
+        B.cod_rca, B.nome_rca, 
+        count(distinct(B.cod_fornec)) as QtFornec, 
+        --B.nome_fornec, 
+        sum(B.venda) as Venda
+        , sum(B.positivacao) as positivacao
+        , sum(B.meta_fim) as meta_fim
+        , sum(B.meta_pos) as meta_pos
+        , round(sum(B.venda)/sum(B.meta_fim),4)*100 as perc_meta_fim
+        , round(sum(B.positivacao)/sum(B.meta_pos),4)*100 as perc_meta_pos
+ 
+FROM 
+
+(        select 
+        'NOMEUSUARIOLOGADO'  USUARIO,
+       
+       (SELECT fnc_dp_ret_dados_consulta((select listagg(pf.codigo, ',') WITHIN GROUP
+          --(ORDER BY pf.codigo) codigo from pcfilial pf where pf.codigo in (:COD_FILIAL)), 1) FROM DUAL) FILIAL,
+          (ORDER BY pf.codigo) codigo from pcfilial pf where pf.codigo in (2)), 1) FROM DUAL) FILIAL,
+       :DTINICIO DATA_INICIAL,
+       :DTFIM  DATA_FINAL,
+       tab2.*,            
+  -- fnc_wn_premiacao_comissao(:COD_FILIAL, tab.cod_rca, to_date(:DATA_INI,'dd-mm-rrrr'), to_date(:DATA_FIM,'dd-mm-rrrr'), 4) perc_meta_fim,
+  -- fnc_wn_premiacao_comissao(:COD_FILIAL, tab.cod_rca, to_date(:DATA_INI,'dd-mm-rrrr'), to_date(:DATA_FIM,'dd-mm-rrrr'), 5) perc_meta_pos
+      case when tab2.meta_fim>0 then 
+                  round(((tab2.venda/tab2.meta_fim)*100),2)
+              else 0 end perc_meta_fim ,
+              
+        case when tab2.meta_pos>0 then 
+                  round(((tab2.positivacao/tab2.meta_pos)*100),2)
+              else 0 end perc_meta_pos            
+             
+    from (
+select 
+  tab.cod_supervisor,
+      tab.nome_sup,
+       tab.cod_rca,
+       tab.nome_rca,
+       tab.cod_fornec,
+       tab.nome_fornec,
+       sum(tab.venda) venda,
+       sum(tab.positivacao) positivacao,
+       sum(tab.meta_fin) meta_fim,
+       sum(tab.meta_pos) meta_pos
+   from (
+select sp.codsupervisor cod_supervisor,
+       sp.nome nome_sup,
+       us.codusur cod_rca,
+       us.nome nome_rca,
+       pf.codfornec cod_fornec,
+       pf.fornecedor nome_fornec,
+       SUM(vd.PVENDA) venda,
+       count(distinct vd.CODCLI) positivacao,
+       0 meta_fin,
+       0 meta_pos
+    from pcusuari us, 
+         pcsuperv sp,
+         vw_vendaspedido vd,
+         pcfornec pf,
+         pcprodut pp
+     where 1=1 
+       and us.codsupervisor=sp.codsupervisor
+       and us.codusur=vd.CODUSUR
+       AND VD.DATA between :DTINICIO and :DTFIM 
+       and vd.CODFILIAL in (2)
+       and US.CODSUPERVISOR in (:Cod_Super)
+       --and US.CODUSUR in (:COD_RCA)
+       and vd.CODPROD=pp.codprod
+       and pf.codfornec=pp.codfornec  
+     group by sp.codsupervisor,
+       sp.nome,
+       us.codusur,
+       us.nome,
+       pf.codfornec,
+       pf.fornecedor
+       
+             
+     union all
+     
+     select 
+     sp.codsupervisor cod_supervisor,
+       sp.nome nome_sup,
+       us.codusur cod_rca,
+       us.nome nome_rca,
+       pf.codfornec cod_fornec,
+       pf.fornecedor nome_fornec,
+       0 venda,
+       0 positivacao,
+       SUM(NVL(mt.VLVENDAPREV,0)) meta_fin,
+       SUM(NVL(mt.CLIPOSPREV,0)) meta_pos
+    from pcusuari us, 
+         pcsuperv sp,
+         pcmeta mt,
+         pcfornec pf
+     where us.codsupervisor=sp.codsupervisor
+       and us.codusur=mt.CODUSUR
+       AND mt.DATA between :DTINICIO and :DTFIM 
+       and mt.CODFILIAL in (2)
+       and US.CODSUPERVISOR in (:Cod_Super)
+       --and US.CODUSUR in (:COD_RCA)
+       and mt.codigo=pf.codfornec 
+       AND mt.TIPOMETA = 'F' 
+     group by 
+     sp.codsupervisor,
+       sp.nome,
+       us.codusur,
+       us.nome,
+       pf.codfornec,
+       pf.fornecedor   
+       ) tab   
+       group by 
+       tab.cod_supervisor,
+       tab.nome_sup,
+       tab.cod_rca,
+       tab.nome_rca,
+       tab.cod_fornec,
+       tab.nome_fornec
+       )tab2
+       where tab2.meta_fim>0
+       
+
+       
+       
+        order by 
+        tab2.cod_supervisor, 
+        tab2.cod_rca, tab2.nome_fornec 
+        
+
+        
+        ) B
+        
+       group by 
+       B.cod_supervisor, B.nome_sup,
+       B.cod_rca, B.nome_rca
+
+
+     ) tab5  on tabelao.codusur = tab5.COD_RCA
+
 --AND tab2.cod_rca = tab4.codusur
 
 
@@ -428,6 +588,5 @@ ORDER BY
 --# - Obs: no bugs.
 --# - Obs: 09/10/2023.
 --#
---# - Created by : Hernaldo Meneses (Matrix_total)
 --# - Hello... please if you find something wrong,  contact-me.
 --#--------------------------------------------------------------------Follow the white rabbit.

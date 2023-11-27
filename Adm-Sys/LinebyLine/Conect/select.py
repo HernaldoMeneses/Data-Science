@@ -7,21 +7,27 @@ connection = cx_Oracle.connect("FRIOBOM/friobom147123@WINT")
 # Crie um cursor para executar consultas SQL
 cursor = connection.cursor()
 
-Select = "SELECT Cliente"
-From = " FROM PCCLIENT"
-Where = " WHERE Rownum < 5"
-
-
+# Exemplo de consulta SQL
+# cursor.execute("SELECT * FROM PCCLIENT WHERE Rownum < 5")
 #Sql = "SELECT Cliente FROM PCCLIENT WHERE Rownum < 5"
-Sql = Select + From + Where
+Sql = ''
+with open ('sql.txt', 'r') as file:
+    for line in file:
+        Sql += line
 
-
+#cursor.execute(Sql)
+# Recupere os resultados
+#for row in cursor:
+#    print(row)
+#print(Sql)
 df = pd.read_sql_query(Sql, connection)
-
+# to CSV
+df.to_csv(('slq.csv'), index=False) 
+df.to_excel(('slq.xlsx'), index=False) 
 # Feche o cursor e a conexão quando terminar
 cursor.close()
 connection.close()
 
 
 # Agora, 'df' é um DataFrame contendo os resultados da consulta
-print(df)
+#print(df)
