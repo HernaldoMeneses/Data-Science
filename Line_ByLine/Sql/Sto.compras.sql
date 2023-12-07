@@ -10,12 +10,13 @@
 --# - more info and of Script.                                                             -#
 --#-----------------------------------------------------------------------------------------#
 select 
-distinct(giro.CODPROD)
-, giro.GIRODIA
-, giro.ESTDIAS
+distinct(giro.codfornec)
+, giro.CODPROD
+, round(giro.GIRODIA,2) as GIRODIA
+, round(giro.ESTDIAS,2) as ESTDIAS
 , round(giro.ESTDIAS-3-ficha.leadtime,0) as stodiasrepo
-, SYSDATE + round(giro.ESTDIAS-3-ficha.leadtime,0) as repor
-, real_.VLCUSTOREAL
+, to_date(SYSDATE,'dd/mm/yyyy') + round(giro.ESTDIAS-3-ficha.leadtime,0) as repor
+, round(real_.VLCUSTOREAL,2) AS VLCUSTOREAL
 
 ,  ficha.QTGerencial
 ,  ficha.QTRESERV
@@ -35,7 +36,7 @@ distinct(giro.CODPROD)
 
 ( 
 SELECT
-       --PCPRODUT.CODFORNEC,  
+       PCPRODUT.CODFORNEC,  
        --PCFORNEC.FORNECEDOR, 
        PCPRODUT.CODPROD, 
        --PCPRODUT.DESCRICAO, 
@@ -74,6 +75,8 @@ SELECT
        (((NVL(QTGIRODIA, 0) * (NVL(PCFORNEC.PRAZOENTREGA, 0) + NVL(PCPRODUT.TEMREPOS, 0))) * 
        (1)))) 
    AND PCEST.CODFILIAL IN('2')
+   --H.Matrix
+   AND PCPRODUT.OBS2 != 'FL'
 ) giro,
 
 (
@@ -260,3 +263,5 @@ SELECT PCPRODUT.CODPROD
 
 where giro.CODPROD = real_.CODPROD
 AND giro.CODPROD = ficha.CODPROD
+
+order by repor, codfornec
