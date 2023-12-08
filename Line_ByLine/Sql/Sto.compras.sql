@@ -15,7 +15,8 @@ distinct(giro.codfornec)
 , round(giro.GIRODIA,2) as GIRODIA
 , round(giro.ESTDIAS,2) as ESTDIAS
 , round(giro.ESTDIAS-3-ficha.leadtime,0) as stodiasrepo
-, to_date(SYSDATE,'dd/mm/yyyy') + round(giro.ESTDIAS-3-ficha.leadtime,0) as repor
+--, to_date(to_date(SYSDATE,'dd/mm/yyyy') + round(giro.ESTDIAS-3-ficha.leadtime,0),'dd/mm/yyyy') as repor
+, TO_CHAR(ADD_month(sysdate, +  round(giro.ESTDIAS-3-ficha.leadtime,0))) as repor
 , round(real_.VLCUSTOREAL,2) AS VLCUSTOREAL
 
 ,  ficha.QTGerencial
