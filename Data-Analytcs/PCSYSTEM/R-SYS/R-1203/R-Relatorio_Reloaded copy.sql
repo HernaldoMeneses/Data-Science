@@ -18,18 +18,23 @@ SELECT
         case when to_number(substr(to_char(PLP.DESCRICAO),0,2)) > S.prazomedio then 'Sim' else 'Nao' end MODIFICADO
           
 
-  FROM PCPREST    P,--
-       PCCLIENT   C,--
-       PCNFSAID   S,--
-       PCUSUARI   U,--
-       PCSUPERV   sup,--
-       PCPLPAG    PLP--
+  FROM PCPREST    P,
+       PCCLIENT   C,
+       PCEMPR     E,
+       PCCOB      B,
+       PCNFSAID   S,
+       PCFILIAL   F,
+       --PCBANCO    BA,
+       PCUSUARI   U,
+       PCSUPERV   sup,
+       PCTGIPREST TGI,
+       PCPLPAG PLP
 
 
  WHERE PLP.CODPLPAG = C.CODPLPAG
  AND P.CODCLI = C.CODCLI
  AND S.codsupervisor = sup.codsupervisor
-   --AND P.NUMTRANSVENDA = S.NUMTRANSVENDA(+)
+   AND P.NUMTRANSVENDA = S.NUMTRANSVENDA(+)
    AND P.CODFILIAL = 2
    --AND P.CODBANCO = BA.CODBANCO(+)
    --AND P.CODCLI in (119859)
@@ -37,11 +42,11 @@ SELECT
  AND (TRUNC(P.DTEMISSAO) <= to_date(:data_end,'dd/mm/yyyy'))
    --AND U.CODSUPERVISOR = :Cod_Super
    AND P.CODCLI = C.CODCLI
-  -- AND P.NUMTRANSVENDA = TGI.NUMTRANSVENDA(+)
-   --AND P.PREST = TGI.PREST(+)
+   AND P.NUMTRANSVENDA = TGI.NUMTRANSVENDA(+)
+   AND P.PREST = TGI.PREST(+)
    --and P.NUMTRANSVENDA = :numtransvenda
---AND   P.CODCOB  = B.CODCOB(+)
---AND P.CODBAIXA = E.MATRICULA(+)
+AND   P.CODCOB  = B.CODCOB(+)
+AND P.CODBAIXA = E.MATRICULA(+)
 AND P.CODUSUR = U.CODUSUR      
 AND P.DTCANCEL IS NULL
 AND P.CODCOB<>'CANC'
