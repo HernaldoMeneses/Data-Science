@@ -37,7 +37,7 @@ SELECT
    AND P.NUMTRANSVENDA = S.NUMTRANSVENDA(+)
    AND P.CODFILIAL = 2
    AND P.CODBANCO = BA.CODBANCO(+)
-   --AND P.CODCLI in (119859)
+   AND P.CODCLI in (119859)
      AND (TRUNC(P.DTEMISSAO) >= to_date(:data_init,'dd/mm/yyyy'))
  AND (TRUNC(P.DTEMISSAO) <= to_date(:data_end,'dd/mm/yyyy'))
    --AND U.CODSUPERVISOR = :Cod_Super

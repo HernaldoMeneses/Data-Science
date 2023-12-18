@@ -18,17 +18,17 @@ SELECT
         case when to_number(substr(to_char(PLP.DESCRICAO),0,2)) > S.prazomedio then 'Sim' else 'Nao' end MODIFICADO
           
 
-  FROM PCPREST    P,
-       PCCLIENT   C,
+  FROM PCPREST    P,--
+       PCCLIENT   C,--
        PCEMPR     E,
        PCCOB      B,
-       PCNFSAID   S,
+       PCNFSAID   S,--
        PCFILIAL   F,
        --PCBANCO    BA,
-       PCUSUARI   U,
-       PCSUPERV   sup,
+       PCUSUARI   U,--
+       PCSUPERV   sup,--
        PCTGIPREST TGI,
-       PCPLPAG PLP
+       PCPLPAG PLP--
 
 
  WHERE PLP.CODPLPAG = C.CODPLPAG
