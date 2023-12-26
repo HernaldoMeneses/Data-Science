@@ -157,7 +157,7 @@ FROM --Obj1
           AND pcusuari.codusur = financ.codusur(+)
           AND pcusuari.codusur = inandimp.codusur(+)
           AND pcusuari.codusur = mix.codusur(+)
-          AND pcusuari.codusur in (:COD_RCA)
+          --AND pcusuari.codusur in (:COD_RCA)
           AND PCUSUARI.CODSUPERVISOR in (:Cod_Super)
           AND NVL(VLVENDA, 0) <> 0 
           ORDER BY PCUSUARI.CODSUPERVISOR,VLVENDA DESC
@@ -198,7 +198,7 @@ FROM --Obj1
                               where  TO_DATE(p.DATA, 'DD-MM-RRRR') between to_date(:DTINICIO,'dd-mm-rrrr') and to_date(:DTFIM,'dd-mm-rrrr')
                               --and p.DTCANCEL is null
                               and p.CODFILIAL=:COD_FILIAL
-                              and p.CODUSUR in (:COD_RCA)
+                              --and p.CODUSUR in (:COD_RCA)
                               and p.CODSUPERVISOR in (:Cod_Super)  
                               --AND P.CONDVENDA IN (1)                        
                          group by p.CODUSUR, p.CODSUPERVISOR    
