@@ -1,71 +1,58 @@
---select finaly.* 
---,  finaly.meta - finaly.realizado as FAlTA 
---, case when finaly.meta> 0 then round(finaly.realizado/finaly.meta*100,2) else 0 end "%"
---from (
+select finaly.* 
+,  finaly.meta - finaly.realizado as FAlTA 
+, case when finaly.meta> 0 then round(finaly.realizado/finaly.meta*100,2) else 0 end "%"
+from (
 Select relatorio.CODGERENTE, relatorio.CODSUPERVISOR, relatorio.nome, relatorio.CODCLI, relatorio.cliente,  relatorio.MUNICCOB,
 
+Case    					
+when relatorio.CODCLI = 101719 then 15000
+when relatorio.CODCLI = 111174 then 9000
+when relatorio.CODCLI = 123566 then 2900
+when relatorio.CODCLI = 116811 then 13000
+when relatorio.CODCLI = 8583 then 6500
+when relatorio.CODCLI = 117304 then 3700
+when relatorio.CODCLI = 119222 then 3800
+when relatorio.CODCLI = 122977 then 2500
+when relatorio.CODCLI = 119859 then 12000
+when relatorio.CODCLI = 862 then 10800
+when relatorio.CODCLI = 4219 then 6500
+when relatorio.CODCLI = 106144 then 3750
+when relatorio.CODCLI = 3534 then 1500
+when relatorio.CODCLI = 130523 then 7500
+when relatorio.CODCLI = 128494 then 7500
+when relatorio.CODCLI = 100334 then 5000
+when relatorio.CODCLI = 124882 then 13000
+when relatorio.CODCLI = 4912 then 4000
+when relatorio.CODCLI = 7855 then 20000
+when relatorio.CODCLI = 3005 then 15000
+when relatorio.CODCLI = 124456 then 4000
+when relatorio.CODCLI = 105596 then 8700
+when relatorio.CODCLI = 110243 then 11000
+when relatorio.CODCLI = 122237 then 1600
+when relatorio.CODCLI = 133086 then 1250
+when relatorio.CODCLI = 2319 then 450
+when relatorio.CODCLI = 128201 then 1200
+when relatorio.CODCLI = 126854 then 14500
+when relatorio.CODCLI = 112965 then 2000
+when relatorio.CODCLI = 112677 then 1250
+when relatorio.CODCLI = 134644 then 4300
+when relatorio.CODCLI = 114587 then 500
+when relatorio.CODCLI = 136394 then 2300
+when relatorio.CODCLI = 118673 then 10000
+when relatorio.CODCLI = 136483 then 19500
+when relatorio.CODCLI = 136393 then 4000
+when relatorio.CODCLI = 136394 then 19500
+when relatorio.CODCLI = 136511 then 4000
+when relatorio.CODCLI = 136511 then 800
+when relatorio.CODCLI = 2669 then 2900
 
 	
-relatorio.Meta,									
+else 0 end Meta,									
 
 
 sum(relatorio.VLVENDA) as Realizado
 from (
 SELECT  PCPEDC.CODSUPERVISOR, PCSUPERV.NOME, PCPEDC.CODGERENTE, PCPEDC.POSICAO,PCPEDC.DATA,PCPEDC.CODUSUR,PCPEDC.CODFILIAL, PCPRODUT.CODEPTO, PCFORNEC.codfornec,PCPRODUT.CODPROD, PCPEDC.CODCLI, PCCLIENT.cliente, PCCLIENT.MUNICCOB,
-
-Case
-when PCPEDC.CODCLI = 101719 then 15000
-when PCPEDC.CODCLI = 111174 then 9000
-when PCPEDC.CODCLI = 123566 then 2900
-when PCPEDC.CODCLI = 116811 then 13000
-when PCPEDC.CODCLI = 8583 then 6500
-when PCPEDC.CODCLI = 117304 then 3700
-when PCPEDC.CODCLI = 119222 then 3800
-when PCPEDC.CODCLI = 122977 then 2500
-when PCPEDC.CODCLI = 119859 then 12000
-when PCPEDC.CODCLI = 862 then 10800
-when PCPEDC.CODCLI = 4219 then 6500
-when PCPEDC.CODCLI = 106144 then 3750
-when PCPEDC.CODCLI = 3534 then 1500
-when PCPEDC.CODCLI = 130523 then 7500
-when PCPEDC.CODCLI = 128494 then 7500
-when PCPEDC.CODCLI = 100334 then 5000
-when PCPEDC.CODCLI = 124882 then 13000
-when PCPEDC.CODCLI = 4912 then 4000
-when PCPEDC.CODCLI = 7855 then 20000
-when PCPEDC.CODCLI = 3005 then 15000
-when PCPEDC.CODCLI = 124456 then 4000
-when PCPEDC.CODCLI = 105596 then 8700
-when PCPEDC.CODCLI = 110243 then 11000
-when PCPEDC.CODCLI = 122237 then 1600
-when PCPEDC.CODCLI = 133086 then 1250
-when PCPEDC.CODCLI = 2319 then 450
-when PCPEDC.CODCLI = 128201 then 1200
-when PCPEDC.CODCLI = 126854 then 14500
-when PCPEDC.CODCLI = 112965 then 2000
-when PCPEDC.CODCLI = 112677 then 1250
-when PCPEDC.CODCLI = 134644 then 4300
-when PCPEDC.CODCLI = 114587 then 500
-when PCPEDC.CODCLI = 136394 then 2300
-when PCPEDC.CODCLI = 118673 then 10000
-when PCPEDC.CODCLI = 136483 then 19500
-when PCPEDC.CODCLI = 136393 then 4000
-when PCPEDC.CODCLI = 136394 then 19500
-when PCPEDC.CODCLI = 136511 then 4000
-when PCPEDC.CODCLI = 136511 then 800
-when PCPEDC.CODCLI = 2669 then 2900
-else 0 end Meta,
-
-
-
-
-
-
-
-
-
-
-
        SUM(CASE                                                                                                                            
              WHEN NVL(PCPEDI.BONIFIC, 'N') = 'N' THEN                                                                                  
               DECODE(PCPEDC.CONDVENDA,                                                                                                     
@@ -198,11 +185,10 @@ ORDER BY VLVENDA
 ) relatorio
 
 where relatorio.codfornec in (1214)
-AND   relatorio.CODGERENTE in (:codGER)
-AND relatorio.META > 0
+--AND   relatorio.CODGERENTE in (:codGER)
 
-Group by  relatorio.CODGERENTE, relatorio.CODSUPERVISOR, relatorio.nome, relatorio.CODCLI, relatorio.cliente, relatorio.MUNICCOB, relatorio.META
---) finaly
---where finaly.meta> 0
---Order by    "%" desc
+Group by  relatorio.CODGERENTE, relatorio.CODSUPERVISOR, relatorio.nome, relatorio.CODCLI, relatorio.cliente, relatorio.MUNICCOB
+) finaly
+where finaly.meta> 0
+Order by    "%" desc
 --finaly.meta desc, '%' 
