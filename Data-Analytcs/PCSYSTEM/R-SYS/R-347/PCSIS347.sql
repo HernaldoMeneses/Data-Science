@@ -1,30 +1,12 @@
 ----------------------------------
-Timestamp: 18:31:47.994
-SELECT PCSUPERV.CODSUPERVISOR
-       , PCSUPERV.NOME
-    FROM PCSUPERV
-   WHERE 1 = 1
-     AND ((PCSUPERV.CODSUPERVISOR IN (SELECT CODIGON
-                                        FROM PCLIB
-                                       WHERE PCLIB.CODTABELA = 7
-                                         AND CODIGON <> 9999
-                                         AND CODFUNC = 1261)) OR
-           EXISTS (SELECT CODIGON
-                     FROM PCLIB
-                    WHERE PCLIB.CODTABELA = 7
-                      AND CODIGON = 9999
-                      AND CODFUNC = 1261))
- AND TO_CHAR(PCSUPERV.CODSUPERVISOR) = :PARAM1
-PARAM1 = '56'
-----------------------------------
-Timestamp: 18:31:48.087
+Timestamp: 17:27:38.602
 SELECT LAST_DAY(:DTFIM) DATA FROM DUAL
-DTFIM = '31/10/2023'
+DTFIM = '31/01/2024'
 ----------------------------------
-Timestamp: 18:31:48.125
+Timestamp: 17:27:38.617
 SELECT TRUNC(SYSDATE) DATA FROM DUAL
 ----------------------------------
-Timestamp: 18:31:48.156
+Timestamp: 17:27:38.635
 SELECT CODIGO,
        RAZAOSOCIAL,
        CGC
@@ -33,13 +15,13 @@ WHERE CODIGO IN (SELECT PCLIB.CODIGOA FROM PCLIB WHERE PCLIB.CODFUNC = 1261 AND 
  AND TO_CHAR(CODIGO) = :PARAM1
 PARAM1 = '2'
 ----------------------------------
-Timestamp: 18:31:48.190
+Timestamp: 17:27:38.673
 SELECT NVL(PCFILIAL.USADIAUTILFILIAL,'N') USADIAUTILFILIAL
 FROM PCFILIAL
 WHERE PCFILIAL.CODIGO = 
 '2'
 ----------------------------------
-Timestamp: 18:31:48.215
+Timestamp: 17:27:38.692
 SELECT CODIGO,
        RAZAOSOCIAL,
        CGC
@@ -48,17 +30,17 @@ WHERE CODIGO IN (SELECT PCLIB.CODIGOA FROM PCLIB WHERE PCLIB.CODFUNC = 1261 AND 
  AND TO_CHAR(CODIGO) = :PARAM1
 PARAM1 = '2'
 ----------------------------------
-Timestamp: 18:31:48.248
+Timestamp: 17:27:38.729
 SELECT COUNT(*) DIAVENDAS
   FROM PCDIASUTEIS
  WHERE PCDIASUTEIS.DATA BETWEEN :DATA1 AND :DATA2
    AND PCDIASUTEIS.DIAVENDAS = 'S'
    AND PCDIASUTEIS.CODFILIAL = 
 '2'
-DATA1 = '01/10/2023'
-DATA2 = '31/10/2023'
+DATA1 = '24/01/2024'
+DATA2 = '31/01/2024'
 ----------------------------------
-Timestamp: 18:31:48.286
+Timestamp: 17:27:38.766
 SELECT CODIGO,
        RAZAOSOCIAL,
        CGC
@@ -67,16 +49,16 @@ WHERE CODIGO IN (SELECT PCLIB.CODIGOA FROM PCLIB WHERE PCLIB.CODFUNC = 1261 AND 
  AND TO_CHAR(CODIGO) = :PARAM1
 PARAM1 = '2'
 ----------------------------------
-Timestamp: 18:31:48.322
+Timestamp: 17:27:38.803
 SELECT COUNT(*) DIAVENDAS
   FROM PCDIASUTEIS
  WHERE PCDIASUTEIS.DATA BETWEEN :DATA1 AND trunc(sysdate) 
    AND PCDIASUTEIS.DIAVENDAS = 'S'
    AND PCDIASUTEIS.CODFILIAL = 
 '2'
-DATA1 = '01/10/2023'
+DATA1 = '24/01/2024'
 ----------------------------------
-Timestamp: 18:31:48.352
+Timestamp: 17:27:38.865
 SELECT CODIGO,
        RAZAOSOCIAL,
        CGC
@@ -85,7 +67,7 @@ WHERE CODIGO IN (SELECT PCLIB.CODIGOA FROM PCLIB WHERE PCLIB.CODFUNC = 1261 AND 
  AND TO_CHAR(CODIGO) = :PARAM1
 PARAM1 = '2'
 ----------------------------------
-Timestamp: 18:31:48.382
+Timestamp: 17:27:38.926
 SELECT CODIGO,
        RAZAOSOCIAL,
        CGC
@@ -94,7 +76,7 @@ WHERE CODIGO IN (SELECT PCLIB.CODIGOA FROM PCLIB WHERE PCLIB.CODFUNC = 1261 AND 
  AND TO_CHAR(CODIGO) = :PARAM1
 PARAM1 = '2'
 ----------------------------------
-Timestamp: 18:31:48.430
+Timestamp: 17:27:38.998
 SELECT CODIGO,
        RAZAOSOCIAL,
        CGC
@@ -103,7 +85,7 @@ WHERE CODIGO IN (SELECT PCLIB.CODIGOA FROM PCLIB WHERE PCLIB.CODFUNC = 1261 AND 
  AND TO_CHAR(CODIGO) = :PARAM1
 PARAM1 = '2'
 ----------------------------------
-Timestamp: 18:31:48.480
+Timestamp: 17:27:39.063
 SELECT CODIGO,
        RAZAOSOCIAL,
        CGC
@@ -112,7 +94,7 @@ WHERE CODIGO IN (SELECT PCLIB.CODIGOA FROM PCLIB WHERE PCLIB.CODFUNC = 1261 AND 
  AND TO_CHAR(CODIGO) = :PARAM1
 PARAM1 = '2'
 ----------------------------------
-Timestamp: 18:31:48.526
+Timestamp: 17:27:39.122
 SELECT CODIGO,
        RAZAOSOCIAL,
        CGC
@@ -121,7 +103,7 @@ WHERE CODIGO IN (SELECT PCLIB.CODIGOA FROM PCLIB WHERE PCLIB.CODFUNC = 1261 AND 
  AND TO_CHAR(CODIGO) = :PARAM1
 PARAM1 = '2'
 ----------------------------------
-Timestamp: 18:31:48.564
+Timestamp: 17:27:39.173
 SELECT CODIGO,
        RAZAOSOCIAL,
        CGC
@@ -130,7 +112,7 @@ WHERE CODIGO IN (SELECT PCLIB.CODIGOA FROM PCLIB WHERE PCLIB.CODFUNC = 1261 AND 
  AND TO_CHAR(CODIGO) = :PARAM1
 PARAM1 = '2'
 ----------------------------------
-Timestamp: 18:31:48.601
+Timestamp: 17:27:39.236
 SELECT CODIGO,
        RAZAOSOCIAL,
        CGC
@@ -139,14 +121,14 @@ WHERE CODIGO IN (SELECT PCLIB.CODIGOA FROM PCLIB WHERE PCLIB.CODFUNC = 1261 AND 
  AND TO_CHAR(CODIGO) = :PARAM1
 PARAM1 = '2'
 ----------------------------------
-Timestamp: 18:31:48.634
+Timestamp: 17:27:39.286
 SELECT COUNT(*) ACESSO
   FROM PCLIB
  WHERE PCLIB.CODTABELA = 7
    AND PCLIB.CODFUNC = 1261
    AND PCLIB.CODIGON = 9999
 ----------------------------------
-Timestamp: 18:31:49.525
+Timestamp: 17:27:39.800
 SELECT pcusuari.codusur, pcusuari.nome, pcusuari.dtinicio,
        pcusuari.telefone2 AS telefone1, pcusuari.codsupervisor,
        pcusuari.dtinformatiza, pcusuari.dtentregadoc,
@@ -339,11 +321,11 @@ AND  PCPEDC.CODSUPERVISOR = :CODSUPERVISOR
    AND PCUSUARI.CODSUPERVISOR = :CODSUPERVISOR
  AND NVL(VLVENDA, 0) <> 0 
 ORDER BY PCUSUARI.CODSUPERVISOR,VLVENDA DESC
-DTINICIO = '01/10/2023'
-DTFIM = '31/10/2023'
-codsupervisor = 56
+DTINICIO = '24/01/2024'
+DTFIM = '31/01/2024'
+codsupervisor = 42
 ----------------------------------
-Timestamp: 18:31:49.803
+Timestamp: 17:27:40.208
 SELECT CODIGO,
        RAZAOSOCIAL,
        CGC
@@ -352,13 +334,13 @@ WHERE CODIGO IN (SELECT PCLIB.CODIGOA FROM PCLIB WHERE PCLIB.CODFUNC = 1261 AND 
  AND TO_CHAR(CODIGO) = :PARAM1
 PARAM1 = '2'
 ----------------------------------
-Timestamp: 18:31:49.831
+Timestamp: 17:27:40.266
 SELECT NVL(PCFILIAL.USADIAUTILFILIAL,'N') USADIAUTILFILIAL
 FROM PCFILIAL
 WHERE PCFILIAL.CODIGO = 
 '2'
 ----------------------------------
-Timestamp: 18:31:49.848
+Timestamp: 17:27:40.295
 SELECT CODIGO,
        RAZAOSOCIAL,
        CGC
@@ -367,17 +349,17 @@ WHERE CODIGO IN (SELECT PCLIB.CODIGOA FROM PCLIB WHERE PCLIB.CODFUNC = 1261 AND 
  AND TO_CHAR(CODIGO) = :PARAM1
 PARAM1 = '2'
 ----------------------------------
-Timestamp: 18:31:49.873
+Timestamp: 17:27:40.341
 SELECT COUNT(*) DIAVENDAS
   FROM PCDIASUTEIS
  WHERE PCDIASUTEIS.DATA BETWEEN :DATA1 AND :DATA2
    AND PCDIASUTEIS.DIAVENDAS = 'S'
    AND PCDIASUTEIS.CODFILIAL = 
 '2'
-DATA1 = '01/10/2023'
-DATA2 = '31/10/2023'
+DATA1 = '24/01/2024'
+DATA2 = '31/01/2024'
 ----------------------------------
-Timestamp: 18:31:49.902
+Timestamp: 17:27:40.384
 SELECT CODIGO,
        RAZAOSOCIAL,
        CGC
@@ -386,15 +368,11 @@ WHERE CODIGO IN (SELECT PCLIB.CODIGOA FROM PCLIB WHERE PCLIB.CODFUNC = 1261 AND 
  AND TO_CHAR(CODIGO) = :PARAM1
 PARAM1 = '2'
 ----------------------------------
-Timestamp: 18:31:49.930
+Timestamp: 17:27:40.439
 SELECT COUNT(*) DIAVENDAS
   FROM PCDIASUTEIS
  WHERE PCDIASUTEIS.DATA BETWEEN :DATA1 AND trunc(sysdate) 
    AND PCDIASUTEIS.DIAVENDAS = 'S'
    AND PCDIASUTEIS.CODFILIAL = 
 '2'
-DATA1 = '01/10/2023'
-----------------------------------
-Timestamp: 18:31:49.955
-SELECT PARAMFILIAL.OBTERCOMOVARCHAR2('CON_DIRWINTHOR', '99')
-  FROM DUAL
+DATA1 = '24/01/2024'
