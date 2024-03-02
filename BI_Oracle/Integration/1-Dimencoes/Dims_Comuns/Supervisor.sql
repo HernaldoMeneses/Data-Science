@@ -1,0 +1,1 @@
+select pcsuperv.codsupervisor, pcsuperv.nome, pcsuperv.cod_cadrca, pcsuperv.codgerente from pcsuperv

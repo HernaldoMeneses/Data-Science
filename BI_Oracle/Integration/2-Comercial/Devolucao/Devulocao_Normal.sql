@@ -1,0 +1,85 @@
+SELECT DEVOL.CODUSUR,
+       DEVOL.CODSUPERVISOR,
+       DEVOL.CODFILIAL,
+       DEVOL.CODDEVOL,
+       DEVOL.DTENT,                                                                                                               
+       DEVOL.QTNF,                                                         
+       DEVOL.VLTOTAL,                                                      
+       DEVOL.TOTPESO,                                                      
+       DEVOL.VLOUTRAS                                                      
+FROM  (SELECT DTENT, CODUSUR, NOME, COUNT(DISTINCT NUMNOTA) QTNF, CODSUPERVISOR,CODFILIAL, CODDEVOL,              
+               SUM(NVL(VLDEVOLUCAO,0) + NVL(VLDEVOLBONIFIC,0)) VLTOTAL,    
+               SUM(NVL(TOTPESO,0)) TOTPESO,                                
+               SUM(NVL(VLOUTRAS,0) + NVL(VLFRETE,0) ) VLOUTRAS FROM (      
+SELECT DEVOL.CODPROD,                     
+    DEVOL.DESCRICAO,                      
+    DEVOL.TOTPESO,                        
+    DEVOL.VLOUTRAS,                       
+    DEVOL.VLDEVOLUCAO,                    
+    DEVOL.VLDEVOLBONIFIC,                 
+    DEVOL.VLFRETE,                        
+    DEVOL.CODDEVOL,                       
+    DEVOL.MOTIVO,                         
+    DEVOL.MOTIVO2,                        
+    DEVOL.DEVOLITEM,                      
+    DEVOL.NUMNOTA,                        
+    DEVOL.CODMOTORISTADEVOL,              
+    DEVOL.CODFORNEC,                      
+    DEVOL.CODFILIAL,                      
+    DEVOL.DTENT,                          
+    DEVOL.CONDVENDA,                      
+    DEVOL.QT,                             
+    DEVOL.CODEPTO,                        
+    DEVOL.UNIDADE,                        
+    DEPARTAMENTO,         
+    FORNECEDOR ,         
+    DEVOL.SUPERV,          
+    DEVOL.CODSUPERVISOR,   
+    DEVOL.NOME,                  
+    DEVOL.CODUSUR,                
+    DEVOL.CLIENTE,                  
+    DEVOL.CODCLI,                
+    DEVOL.EMBALAGEM           
+FROM (                              
+      SELECT VW.CODPROD,               
+            VW.DESCRICAO,              
+            VW.TOTPESO,                
+            VW.VLOUTRAS,               
+            VW.VLDEVOLUCAO,            
+            VW.VLDEVOLBONIFIC,         
+            VW.VLFRETE,                
+            VW.CODDEVOL,               
+            VW.MOTIVO,                 
+            VW.MOTIVO2,                
+            VW.DEVOLITEM,              
+            VW.NUMNOTA,                
+            VW.CODMOTORISTADEVOL,      
+            VW.CODFORNEC,              
+            VW.CODFILIAL,              
+            VW.DTENT,                  
+            VW.CONDVENDA,              
+            VW.QT,                     
+            VW.CODEPTO,                
+            VW.DEPARTAMENTO,           
+            VW.FORNECEDOR,              
+            VW.SUPERV,          
+            VW.CODSUPERVMOV AS CODSUPERVISOR,   
+            VW.NOME,                  
+            VW.CODUSUR,                
+            VW.CLIENTE,                  
+            VW.CODCLI,                
+            VW.UNIDADE,           
+            VW.EMBALAGEM,           
+            VW.TEMVENDATV8,  
+            VW.BONIFICADO 
+       FROM VIEW_DEVOL_RESUMO_FATURAMENTO VW
+          , PCNFENT 
+       WHERE VW.NUMTRANSENT = PCNFENT.NUMTRANSENT 
+       AND PCNFENT.TIPODESCARGA <> 'T'
+ ) DEVOL                            
+ WHERE --TO_DATE(DEVOL.DTENT) BETWEEN '3' AND '30-jul-2023' 
+ TO_CHAR(DEVOL.DTENT , 'YYYY') >= TO_CHAR(ADD_MONTHS(SYSDATE, -24), 'YYYY')    
+ AND DEVOL.CONDVENDA NOT IN (4, 8, 10, 13, 20, 98, 99) 
+ AND NVL(DEVOL.CONDVENDA,0) NOT IN (5,6,11,12) AND DEVOL.BONIFICADO = 'N' 
+    )    GROUP BY DTENT,CODUSUR,NOME, CODSUPERVISOR, CODFILIAL, CODDEVOL) DEVOL                                       
+        ORDER BY DEVOL.VLTOTAL DESC

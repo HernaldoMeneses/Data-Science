@@ -1,0 +1,12 @@
+SELECT
+  PA.CODAVARIA AS CodigoAvaria,
+  PA.CODFILIAL AS CodigoFilial,
+  PA.CODFORNEC AS CodigoFornecedor,
+  PA.CODFUNCLANC AS CodigoFuncaoLancamento,
+  PA.CODMOTIVOAVARIA AS CodigoMotivoAvaria,
+  PA.CODPROD AS CodigoProduto,
+  PA.DATA,
+  PA.QT AS Quantidade
+FROM PCPRODAVARIA PA
+WHERE
+   TO_CHAR(PA.DATA, 'YYYY') >= TO_CHAR(ADD_MONTHS(SYSDATE, -36), 'YYYY')

@@ -1,0 +1,14 @@
+SELECT
+	l.numtransent AS NUMEROTRANSACAOENTRADA,
+	l.numlote AS NUMEROLOTE,
+	l.codprod AS CODIGOPRODUTO,
+	l.codfilial AS CODIGOFILIAL,
+	l.dtultmovent AS DATAENTRADA,
+	l.dtultmovsai AS DATASAIDA,
+	l.dtvalidade AS DATAVALIDADE,
+	l.qt AS QUANTIDADE,
+	l.qtreserv AS QUANTIDADERESERVADA,
+	l.qtbloqueada AS QUANTIDADEBLOQUEADA,
+	l.qtindeniz AS QUANTIDADEINDENIZADA
+FROM
+	pclote l

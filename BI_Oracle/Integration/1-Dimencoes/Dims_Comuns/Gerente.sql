@@ -1,0 +1,1 @@
+select pcgerente.codgerente, pcgerente.nomegerente, pcgerente.cod_cadrca from pcgerente
