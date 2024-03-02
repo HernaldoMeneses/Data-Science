@@ -66,7 +66,7 @@ from
 where
     --TO_CHAR( a.data , 'YYYY') >= TO_CHAR(ADD_MONTHS(SYSDATE, -132), 'YYYY')
     a.data >= to_date('01/12/2023','dd/mm/yyyy')
-    and a.data <= to_date('31/03/2024','dd/mm/yyyy')
+    and a.data <= to_date('29/02/2024','dd/mm/yyyy')
 
 ) datas
 
