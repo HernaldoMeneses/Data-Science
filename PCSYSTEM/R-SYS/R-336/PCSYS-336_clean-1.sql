@@ -1,33 +1,4 @@
-----------------------------------
-Timestamp: 10:19:06.609
-SELECT CODIGO
-  FROM PCFILIAL
- WHERE NVL(BROKER,'N') = 'S'
-   AND TIPOBROKER = 'MAB'
-----------------------------------
-Timestamp: 10:20:09.785
-SELECT CODIGO,
-       RAZAOSOCIAL,
-       CGC
-FROM PCFILIAL
-WHERE 1 = 1 
-AND ( (EXISTS (SELECT * FROM PCLIB WHERE PCLIB.CODFUNC = 1261 AND CODTABELA = 1 AND PCLIB.CODIGOA = '99')) OR 
-      (EXISTS (SELECT * FROM PCLIB WHERE PCLIB.CODFUNC = 1261 AND CODTABELA = 1 AND PCLIB.CODIGOA = PCFILIAL.CODIGO))) 
- AND TO_CHAR(CODIGO) = :PARAM1
-PARAM1 = '2'
-----------------------------------
-Timestamp: 10:20:10.290
-SELECT CODIGO,
-       RAZAOSOCIAL,
-       CGC
-FROM PCFILIAL
-WHERE 1 = 1 
-AND ( (EXISTS (SELECT * FROM PCLIB WHERE PCLIB.CODFUNC = 1261 AND CODTABELA = 1 AND PCLIB.CODIGOA = '99')) OR 
-      (EXISTS (SELECT * FROM PCLIB WHERE PCLIB.CODFUNC = 1261 AND CODTABELA = 1 AND PCLIB.CODIGOA = PCFILIAL.CODIGO))) 
- AND TO_CHAR(CODIGO) = :PARAM1
-PARAM1 = '2'
-----------------------------------
-Timestamp: 10:20:10.609
+
 SELECT 0 as SELECIONADO, PCPEDC.AGRUPAMENTO, PCPEDC.NUMPED, PCPEDC.DATA, PCPEDC.HORA, PCPEDC.VLBONIFIC,                               
        PCPEDC.RESERVAESTOQUETV7,                                                                                                      
        NVL(PCCLIENT.ORIGEMPRECO, 'F') OrigemPreco_client, PCPEDC.CONTAORDEM, PCPEDC.CODCLITV8,                                      
