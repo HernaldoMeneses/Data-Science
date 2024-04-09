@@ -78,7 +78,20 @@ T.VALORCOMISSAO/T.VALOR*100
 ELSE 0                                                                            
 END,4) PERCOM                                                                     
 , T.*                                                                             
-FROM (SELECT COUNT(PCPREST.NUMTRANSVENDA || PCPREST.PREST) QTTITULOS,             
+FROM (
+  
+  
+  
+  /*-- Inicio da Tabela T */
+  /*-- Inicio da Tabela T */
+  /*-- Inicio da Tabela T */
+  /*-- Inicio da Tabela T */
+  
+  
+  
+  
+  
+  SELECT COUNT(PCPREST.NUMTRANSVENDA || PCPREST.PREST) QTTITULOS,             
              PCUSUARI.CODUSUR,                                                    
              PCUSUARI.PERCENT,                                                    
              PCUSUARI.PERCENT2,                                                   
@@ -191,7 +204,24 @@ AND NVL(PCCOB.TIPOCOMISSAO,'A') IN ('L','A')
                PCUSUARI.NUMDVCCORRENTE,                                           
                PCUSUARI.INDICERATEIOCOMISSAO,                                     
                PCSUPERV.CODSUPERVISOR,                                            
-               PCSUPERV.NOME) T,                                                  
+               PCSUPERV.NOME) T,  
+
+
+
+
+
+  
+  /*-- Inicio da Tabela G */
+  /*-- Inicio da Tabela G */
+  /*-- Inicio da Tabela G */
+  /*-- Inicio da Tabela G */
+
+
+
+
+
+
+
      (SELECT U.CODUSUR,                                                           
              U.NOME,                                                              
              COUNT(DISTINCT(P.NUMTRANSVENDA || P.PREST)) QTDOC,                   
@@ -252,7 +282,11 @@ AND NVL(B.TIPOCOMISSAO,'A') IN ('L','A')
       AND P.CODFILIAL = P_FILIAL
       AND F.DTCANCEL IS NULL                                                      
       AND P.CODCOB NOT IN ('DESD', 'ESTR', 'DEVT', 'DEVP', 'BNF', 'CANC','CRED')
-      GROUP BY U.CODUSUR, U.NOME) G                                               
+      GROUP BY U.CODUSUR, U.NOME) G    
+
+
+
+
 WHERE T.CODUSUR = G.CODUSUR(+) 
   AND T.CODUSUR = P_RCA                                                   
 ORDER BY T.CODSUPERVISOR, T.CODUSUR
@@ -774,8 +808,8 @@ if P_OPCAO = 6 then -- RETORNA O % DE COB DE META DE LUCRO DO RCA
      from (     
   select    
        (select v.comissaoservicoprestado from pcusuari v where v.codusur=tab.rca) margem_padrao,  
-        case when (sum(tab.venda))<= 0 then 0 
-                   else round((((sum(tab.venda)-sum(tab.dev))-sum(custofin))/(sum(tab.venda))*100),2)
+        case when (sum(tab.venda))<= 0 then 0
+                    else round((((sum(tab.venda)-sum(tab.dev))-sum(custofin))/(sum(tab.venda))*100),2)
                 end  per_lucro
              from ( 
            
@@ -898,7 +932,7 @@ if P_OPCAO = 8 then -- RETORNA O % DE LUCRO DO RCA
                       --and p.DTCANCEL is null
                       and p.CODFILIAL=P_FILIAL
                       and p.CODUSUR in (P_RCA)
-                      and p.CODFORNEC not in (3077, 3083)
+                      --and p.CODFORNEC not in (3077, 3083)
                       --and p.CODSUPERVISOR in (:SUP)  
                       --AND P.CONDVENDA IN (1)
                        
@@ -1394,3 +1428,4 @@ end if;
 return  V_RETORNO;
 
 end;
+
