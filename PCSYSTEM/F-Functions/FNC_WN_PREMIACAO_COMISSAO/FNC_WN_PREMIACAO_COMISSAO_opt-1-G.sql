@@ -55,22 +55,17 @@ SELECT  TAB1.CODUSUR,
                  WHERE C1.CODFUNC = PCUSUARI.CODUSUR                              
                  AND C1.TIPOFUNC = 'R'                                          
                  AND C1.CODFILIAL = 2                                 
-                 ),0) VALES, 
-
-
-/*
+                 ),0) VALES,                                                        
              -------------Retornar Devolução---------------------------           
              NVL((SELECT SUM(E.VLESTORNO)                                         
                  FROM PCCRECLI C, PCESTCOM E                                      
-                 WHERE C.DTDESCONTO >= to_date('01/04/2024','dd/mm/yyyy')
+                 WHERE C.DTDESCONTO >= to_date('01/01/2024','dd/mm/yyyy')
                  --C.DTDESCONTO BETWEEN P_DATA_INI AND P_DATA_FIM                
                  AND C.CODFILIAL = 2                                     
                  AND C.NUMTRANSENTDEVCLI IS NOT NULL                              
                  AND C.NUMTRANSENTDEVCLI = E.NUMTRANSENT                          
                  AND E.CODUSUR = PCUSUARI.CODUSUR),                               
-                 0) VALORESTORNO,    
-
-*/
+                 0) VALORESTORNO,                                                 
              ------------------------------                                       
              ROUND(NVL(SUM(
                          PCNFSAID.VLTOTGER - (PCNFSAID.ICMSRETIDO + PCNFSAID.VLOUTRASDESP)),        
@@ -110,7 +105,7 @@ SUM(PCPREST.VALOR) VALOR
       AND NVL(PCUSUARI.BLOQCOMIS, 'N') <> 'S'                                 
 AND PCPREST.DTPAGCOMISSAO IS NULL
 --AND PCPREST.Dtbaixa BETWEEN P_DATA_INI AND P_DATA_FIM
- and PCPREST.Dtbaixa >= to_date('01/04/2024','dd/mm/yyyy')
+ and PCPREST.Dtbaixa >= to_date('01/01/2024','dd/mm/yyyy')
 AND NVL(PCCOB.TIPOCOMISSAO,'A') IN ('L','A')
       AND (PCPREST.CODFILIAL = 2) 
       GROUP BY PCUSUARI.CODUSUR,                                                  
@@ -128,12 +123,7 @@ AND NVL(PCCOB.TIPOCOMISSAO,'A') IN ('L','A')
                PCUSUARI.NUMDVCCORRENTE,                                           
                PCUSUARI.INDICERATEIOCOMISSAO,                                     
                PCSUPERV.CODSUPERVISOR,                                            
-               PCSUPERV.NOME) T,  
-
-
-
-
-
+               PCSUPERV.NOME) T,                                                  
      (SELECT U.CODUSUR,                                                           
              U.NOME,                                                              
              COUNT(DISTINCT(P.NUMTRANSVENDA || P.PREST)) QTDOC,                   
@@ -194,12 +184,9 @@ AND NVL(B.TIPOCOMISSAO,'A') IN ('L','A')
       AND P.CODFILIAL = 2
       AND F.DTCANCEL IS NULL                                                      
       AND P.CODCOB NOT IN ('DESD', 'ESTR', 'DEVT', 'DEVP', 'BNF', 'CANC','CRED')
-      GROUP BY U.CODUSUR, U.NOME) G   
-
-
-
+      GROUP BY U.CODUSUR, U.NOME) G                                               
 WHERE T.CODUSUR = G.CODUSUR(+) 
- AND T.CODUSUR = 982                                                  
+ -- AND T.CODUSUR = P_RCA                                                   
 ORDER BY T.CODSUPERVISOR, T.CODUSUR
 ) TAB1
       

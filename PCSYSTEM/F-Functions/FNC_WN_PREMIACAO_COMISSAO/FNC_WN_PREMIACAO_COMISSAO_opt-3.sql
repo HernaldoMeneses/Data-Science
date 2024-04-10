@@ -1,15 +1,34 @@
 -- if P_OPCAO = 3 then --- RETORNA A % de inadimplencia vide 1221
-  select 
+  select     
+  tab1.DTVENC,
+  pcsuperv.codgerente,
+    tab1.codsupervisor,
+    tab1.CODUSUR,
+    sum(valor30) as valores16,
+      sum(valor5) as valores5 
+    
+    from (
+  
+  select
+  DTVENC,
+    codsupervisor, 
       CODUSUR,
-       round((sum(valor30)/(sum(valor30)+sum(valor5))*100),2) 
+      sum(valor30) as valor30,
+      sum(valor5) as valor5
+       --round((sum(valor30)/(sum(valor30)+sum(valor5))*100),2) as percent_inad
     from (
 select
+    DTVENC,
+      codsupervisor,
       CODUSUR,
        valor valor5,
        0  valor30 
       from (
-SELECT 
-PCPREST.CODUSUR
+SELECT
+PCPREST.DTVENC
+
+, pcprest.codsupervisor
+, PCPREST.CODUSUR
 , DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),5),5,5   
 ,DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),15),15,15      
 ,DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),30),30,30      
@@ -29,7 +48,9 @@ AND PCPREST.CODCOB NOT IN ('DEVP', 'DEVT', 'BNF',
                            'BNFT', 'BNFR', 'BNTR',                                        
                            'BNRP', 'CRED', 'DESD')                                             
 GROUP BY 
-PCPREST.CODUSUR
+PCPREST.DTVENC
+, pcprest.codsupervisor
+,PCPREST.CODUSUR
 , DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),5),5,5 
 ,DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),15),15,15      
 ,DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),30),30,30      
@@ -42,13 +63,17 @@ where tab1.diasvenc=5
 
 union all
 
-select
+select  
+    DTVENC,
+     codsupervisor,
       CODUSUR,
        0 valor5,
        sum(valor)  valor30 
       from (
-SELECT 
-PCPREST.CODUSUR
+SELECT
+PCPREST.DTVENC
+, pcprest.codsupervisor 
+,PCPREST.CODUSUR
 ,DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),5),5,5   
 ,DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),15),15,15      
 ,DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),30),30,30      
@@ -68,7 +93,9 @@ AND PCPREST.CODCOB NOT IN ('DEVP', 'DEVT', 'BNF',
                            'BNFT', 'BNFR', 'BNTR',                                        
                            'BNRP', 'CRED', 'DESD')                                             
 GROUP BY 
-PCPREST.CODUSUR
+ PCPREST.DTVENC
+, pcprest.codsupervisor
+,PCPREST.CODUSUR
 ,DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),5),5,5 
 ,DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),15),15,15      
 ,DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),30),30,30      
@@ -78,7 +105,19 @@ PCPREST.CODUSUR
 ) tab1
 where tab1.diasvenc>16
 group by 
-      CODUSUR
+    DTVENC
+    , codsupervisor
+      ,CODUSUR
     )
     group by 
-      CODUSUR
+    DTVENC
+    , codsupervisor
+      ,CODUSUR
+
+      ) tab1
+INNER JOIN PCSUPERV ON tab1.codsupervisor = PCSUPERV.codsupervisor
+GROUP BY
+    tab1.DTVENC,
+    pcsuperv.codgerente,
+    tab1.codsupervisor,
+    tab1.CODUSUR;
