@@ -1,16 +1,8 @@
--- if P_OPCAO = 3 then --- RETORNA A % de inadimplencia vide 1221
-  select     
-  tab1.DTVENC,
-  pcsuperv.codgerente,
-    tab1.codsupervisor,
-    tab1.CODUSUR,
-    sum(valor30) as valores16,
-      sum(valor5) as valores5 
-    
-    from (
+
   
   select
   DTVENC,
+  codgerente,
     codsupervisor, 
       CODUSUR,
       sum(valor30) as valor30,
@@ -19,6 +11,7 @@
     from (
 select
     DTVENC,
+    codgerente,
       codsupervisor,
       CODUSUR,
        valor valor5,
@@ -26,8 +19,8 @@ select
       from (
 SELECT
 PCPREST.DTVENC
-
-, pcprest.codsupervisor
+, pcsuperv.codgerente
+, pcsuperv.codsupervisor  
 , PCPREST.CODUSUR
 , DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),5),5,5   
 ,DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),15),15,15      
@@ -36,8 +29,9 @@ PCPREST.DTVENC
 ,DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),90),90,90      
 ,91))))) DIASVENC,                                              
 SUM(PCPREST.VALOR) VALOR, COUNT(*) QT                           
- FROM PCPREST 
- WHERE PCPREST.DTPAG IS NULL                                                                                  
+ FROM PCPREST, pcsuperv 
+ WHERE PCPREST.DTPAG IS NULL 
+ and  pcprest.codsupervisor = pcsuperv.codsupervisor                                                                                
    AND (PCPREST.CODFILIAL IN ( 2 )) 
 
    --AND (PCPREST.CODUSUR IN ( P_RCA )) 
@@ -49,7 +43,8 @@ AND PCPREST.CODCOB NOT IN ('DEVP', 'DEVT', 'BNF',
                            'BNRP', 'CRED', 'DESD')                                             
 GROUP BY 
 PCPREST.DTVENC
-, pcprest.codsupervisor
+, pcsuperv.codgerente
+, pcsuperv.codsupervisor  
 ,PCPREST.CODUSUR
 , DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),5),5,5 
 ,DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),15),15,15      
@@ -65,6 +60,7 @@ union all
 
 select  
     DTVENC,
+    codgerente,
      codsupervisor,
       CODUSUR,
        0 valor5,
@@ -72,7 +68,8 @@ select
       from (
 SELECT
 PCPREST.DTVENC
-, pcprest.codsupervisor 
+, pcsuperv.codgerente
+, pcsuperv.codsupervisor
 ,PCPREST.CODUSUR
 ,DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),5),5,5   
 ,DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),15),15,15      
@@ -81,8 +78,9 @@ PCPREST.DTVENC
 ,DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),90),90,90      
 ,91))))) DIASVENC,                                              
 SUM(PCPREST.VALOR) VALOR, COUNT(*) QT                           
- FROM PCPREST 
- WHERE PCPREST.DTPAG IS NULL                                                                                  
+ FROM PCPREST , pcsuperv
+ WHERE PCPREST.DTPAG IS NULL   
+ and  pcprest.codsupervisor = pcsuperv.codsupervisor                                                                                 
    AND (PCPREST.CODFILIAL IN ( 2 )) 
 
    --AND (PCPREST.CODUSUR IN ( P_RCA )) 
@@ -94,7 +92,8 @@ AND PCPREST.CODCOB NOT IN ('DEVP', 'DEVT', 'BNF',
                            'BNRP', 'CRED', 'DESD')                                             
 GROUP BY 
  PCPREST.DTVENC
-, pcprest.codsupervisor
+ , pcsuperv.codgerente
+, pcsuperv.codsupervisor
 ,PCPREST.CODUSUR
 ,DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),5),5,5 
 ,DECODE(GREATEST((TRUNC(SYSDATE)-PCPREST.DTVENC),15),15,15      
@@ -106,18 +105,13 @@ GROUP BY
 where tab1.diasvenc>16
 group by 
     DTVENC
+    ,codgerente
     , codsupervisor
       ,CODUSUR
     )
     group by 
     DTVENC
+    ,codgerente
     , codsupervisor
       ,CODUSUR
 
-      ) tab1
-INNER JOIN PCSUPERV ON tab1.codsupervisor = PCSUPERV.codsupervisor
-GROUP BY
-    tab1.DTVENC,
-    pcsuperv.codgerente,
-    tab1.codsupervisor,
-    tab1.CODUSUR;

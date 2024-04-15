@@ -58,7 +58,7 @@ SELECT  TAB1.CODUSUR,
                  ),0) VALES, 
 
 
-/*
+
              -------------Retornar Devolução---------------------------           
              NVL((SELECT SUM(E.VLESTORNO)                                         
                  FROM PCCRECLI C, PCESTCOM E                                      
@@ -70,7 +70,7 @@ SELECT  TAB1.CODUSUR,
                  AND E.CODUSUR = PCUSUARI.CODUSUR),                               
                  0) VALORESTORNO,    
 
-*/
+
              ------------------------------                                       
              ROUND(NVL(SUM(
                          PCNFSAID.VLTOTGER - (PCNFSAID.ICMSRETIDO + PCNFSAID.VLOUTRASDESP)),        
