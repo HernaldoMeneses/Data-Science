@@ -14,7 +14,7 @@ COMPOSIÇÃO DA COMISSÃO DOS REPRESENTANTES E SUPERVISORES;
                   
       SELECT 
             PCPREST.Dtbaixa,
-            
+                  PCsuperv.CODGERENTE,
               PCSUPERV.CODSUPERVISOR,                
               PCUSUARI.CODUSUR,
               COUNT(PCPREST.NUMTRANSVENDA || PCPREST.PREST) QTTITULOS,                                                     
@@ -113,6 +113,7 @@ AND NVL(PCCOB.TIPOCOMISSAO,'A') IN ('L','A')
       AND (PCPREST.CODFILIAL = 2) 
       GROUP BY 
       PCPREST.Dtbaixa,
+       PCsuperv.CODGERENTE,
       PCUSUARI.CODUSUR,                                                  
                PCUSUARI.NOME,                                                                                                                     
                 PCUSUARI.PERCENT,                                                 

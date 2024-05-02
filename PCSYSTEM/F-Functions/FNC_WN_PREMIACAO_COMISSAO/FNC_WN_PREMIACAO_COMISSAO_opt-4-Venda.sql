@@ -3,6 +3,7 @@
 --if P_OPCAO = 4 then --- RETORNA A % de cob de meta financeira vide 322
   select --case when count(*)>0 then sum(perc_meta)/count(*) 
          --else 0 end
+         CODUSUR,
        sum(perc_meta)/count(*) 
         --sum(perc_meta)
        --into
@@ -10,6 +11,7 @@
        from
       (
 SELECT DISTINCT 
+      vendas.CODUSUR,
        PCPRODUT.CODFORNEC, 
        PCFORNEC.FORNECEDOR,
        NVL(VENDAS.PVENDA,0) PVENDA,
@@ -68,7 +70,9 @@ GROUP BY
 PCPRODUT.CODFORNEC
 ) VENDAS,
 ( 
-     SELECT PCMETA.CODIGO,
+     SELECT 
+     PCUSUARI.CODUSUR, 
+     PCMETA.CODIGO,
        SUM(NVL(PCMETA.VLVENDAPREV,0)) VLMETA,
        SUM(NVL(PCMETA.CLIPOSPREV,0)) CLIPOSPREV
   FROM PCMETA, PCUSUARI 
@@ -82,12 +86,15 @@ AND PCUSUARI.CODSUPERVISOR NOT IN ('9999')
  AND PCMETA.CODFILIAL IN (2)
 --AND PCUSUARI.CODUSUR IN(P_RCA)
  
-GROUP BY PCMETA.CODIGO
+GROUP BY 
+PCUSUARI.CODUSUR, 
+PCMETA.CODIGO
 ) METAS
 WHERE 
  PCPRODUT.CODFORNEC = PCFORNEC.CODFORNEC(+)
 AND PCPRODUT.CODFORNEC = VENDAS.CODFORNEC(+)
 AND PCPRODUT.CODFORNEC = METAS.CODIGO(+)
+AND Vendas.CODUSUR = METAS.CODUSUR
 --and PCFORNEC.Codfornec in (1214, 1468, 976, 1360, 2591, 390, 4)
 and PCFORNEC.Codfornec in (select p.codfornec from pcfornec p where p.wn_rel8008='S')
 AND NVL(METAS.VLMETA,0) +  NVL(METAS.CLIPOSPREV,0) > 0
@@ -97,3 +104,4 @@ AND NVL(METAS.VLMETA,0) +  NVL(METAS.CLIPOSPREV,0) > 0
 ORDER BY NVL(VENDAS.PVENDA,0) DESC
 )tab1
 where NVL(tab1.VLMETA,0) > 0
+group by CODUSUR

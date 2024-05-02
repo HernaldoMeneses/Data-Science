@@ -123,7 +123,12 @@ AND NVL(PCCOB.TIPOCOMISSAO,'A') IN ('L','A')
                PCUSUARI.NUMDVCCORRENTE,                                           
                PCUSUARI.INDICERATEIOCOMISSAO,                                     
                PCSUPERV.CODSUPERVISOR,                                            
-               PCSUPERV.NOME) T,                                                  
+               PCSUPERV.NOME) T,  
+
+
+
+               
+                                                               
      (SELECT U.CODUSUR,                                                           
              U.NOME,                                                              
              COUNT(DISTINCT(P.NUMTRANSVENDA || P.PREST)) QTDOC,                   
@@ -184,7 +189,10 @@ AND NVL(B.TIPOCOMISSAO,'A') IN ('L','A')
       AND P.CODFILIAL = 2
       AND F.DTCANCEL IS NULL                                                      
       AND P.CODCOB NOT IN ('DESD', 'ESTR', 'DEVT', 'DEVP', 'BNF', 'CANC','CRED')
-      GROUP BY U.CODUSUR, U.NOME) G                                               
+      GROUP BY U.CODUSUR, U.NOME) G   
+
+
+
 WHERE T.CODUSUR = G.CODUSUR(+) 
  -- AND T.CODUSUR = P_RCA                                                   
 ORDER BY T.CODSUPERVISOR, T.CODUSUR

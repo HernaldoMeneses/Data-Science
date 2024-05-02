@@ -71,13 +71,15 @@ FROM (
         TAB1.VALOR VALOR,
         TAB1.VALORCOMISSAO
      FROM (
-SELECT NVL(G.VALORCOMISSAO, 0) VALORCOMISSAOARECEBER,                             
-(T.VALORCOMISSAO-T.VALES-DECODE('N','S',T.VALORESTORNO,0)) COMISSAOLIQUIDA,
-ROUND(CASE WHEN NVL(T.VALOR,0)>0 THEN
-T.VALORCOMISSAO/T.VALOR*100                                                       
-ELSE 0                                                                            
-END,4) PERCOM                                                                     
-, T.*                                                                             
+
+
+              SELECT NVL(G.VALORCOMISSAO, 0) VALORCOMISSAOARECEBER,                             
+                        (T.VALORCOMISSAO-T.VALES-DECODE('N','S',T.VALORESTORNO,0)) COMISSAOLIQUIDA,
+                          ROUND(CASE WHEN NVL(T.VALOR,0)>0 THEN
+                                        T.VALORCOMISSAO/T.VALOR*100                                                       
+                                      ELSE 0                                                                            
+                                        END,4) PERCOM                                                                     
+                      , T.*                                                                             
 FROM (
   
   
